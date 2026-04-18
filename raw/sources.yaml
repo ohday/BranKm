@@ -2,7 +2,7 @@ sources:
   - id: 1
     title: "IPA Room Segmentation Algorithms (Bormann et al.)"
     url: "https://blog.csdn.net/jucat/article/details/138755341"
-    file: "2026-04-18-ipa-room-segmentation.md"
+    file: "ipa-room-segmentation.md"
     fetched: 2026-04-18
     status: content-verified
     covers_questions: [1, 2, 3]
@@ -14,7 +14,7 @@ sources:
   - id: 2
     title: "Hübner et al. — Voxel-Based Indoor Reconstruction and Room Partitioning"
     url: "https://ar5iv.labs.arxiv.org/html/2002.07689"
-    file: "2026-04-18-hubner-voxel-reconstruction.md"
+    file: "hubner-voxel-reconstruction.md"
     fetched: 2026-04-18
     status: content-verified
     covers_questions: [1, 2, 5]
@@ -26,7 +26,7 @@ sources:
   - id: 3
     title: "CGAL SDF-Based Mesh Segmentation"
     url: "https://doc.cgal.org/5.6/Surface_mesh_segmentation/index.html"
-    file: "2026-04-18-cgal-sdf-segmentation.md"
+    file: "cgal-sdf-segmentation.md"
     fetched: 2026-04-18
     status: content-verified
     covers_questions: [1, 2]
@@ -38,7 +38,7 @@ sources:
   - id: 4
     title: "Nyström Approximation for Scalable Spectral Clustering"
     url: "https://ar5iv.labs.arxiv.org/html/2006.14470"
-    file: "2026-04-18-nystrom-spectral-clustering.md"
+    file: "nystrom-spectral-clustering.md"
     fetched: 2026-04-18
     status: content-verified
     covers_questions: [4]
@@ -50,7 +50,7 @@ sources:
   - id: 5
     title: "3D Morphological Room Segmentation (Frías et al. 2020)"
     url: "https://isprs-archives.copernicus.org/articles/XLIV-4-W1-2020/49/2020/"
-    file: "2026-04-18-3d-morphological-room-seg.md"
+    file: "3d-morphological-room-seg.md"
     fetched: 2026-04-18
     status: content-verified
     covers_questions: [1, 2, 3]
@@ -61,7 +61,7 @@ sources:
   - id: 6
     title: "Watershed 3D Distance Field Room Segmentation — Synthesis"
     url: "multiple"
-    file: "2026-04-18-watershed-3d-segmentation.md"
+    file: "watershed-3d-segmentation.md"
     fetched: 2026-04-18
     status: content-verified
     covers_questions: [1, 2]
@@ -73,7 +73,7 @@ sources:
   - id: 7
     title: "Sphere Packing for 3D Room Segmentation (Li et al. 2021)"
     url: "https://www.mdpi.com/2220-9964/10/11/739"
-    file: "2026-04-18-sphere-packing-room-seg.md"
+    file: "sphere-packing-room-seg.md"
     fetched: 2026-04-18
     status: content-verified
     covers_questions: [1, 2]
@@ -85,7 +85,7 @@ sources:
   - id: 8
     title: "Topological Persistence for Indoor Space Segmentation"
     url: "synthesized"
-    file: "2026-04-18-topological-persistence.md"
+    file: "topological-persistence.md"
     fetched: 2026-04-18
     status: content-verified
     covers_questions: [2, 5]
@@ -97,7 +97,7 @@ sources:
   - id: 9
     title: "Chokepoint/Bottleneck Detection Methods — Synthesis"
     url: "multiple"
-    file: "2026-04-18-chokepoint-detection.md"
+    file: "chokepoint-detection.md"
     fetched: 2026-04-18
     status: content-verified
     covers_questions: [2]
@@ -109,7 +109,7 @@ sources:
   - id: 10
     title: "Corridor Detection Methods — Synthesis"
     url: "multiple"
-    file: "2026-04-18-corridor-detection.md"
+    file: "corridor-detection.md"
     fetched: 2026-04-18
     status: content-verified
     covers_questions: [3]
@@ -121,7 +121,7 @@ sources:
   - id: 11
     title: "Fiedler Vector Spectral Bisection"
     url: "synthesized"
-    file: "2026-04-18-fiedler-vector-bisection.md"
+    file: "fiedler-vector-bisection.md"
     fetched: 2026-04-18
     status: content-verified
     covers_questions: [4]
@@ -132,7 +132,7 @@ sources:
   - id: 12
     title: "Graph Laplacian Affinity Matrix Construction"
     url: "synthesized"
-    file: "2026-04-18-graph-laplacian-affinity.md"
+    file: "graph-laplacian-affinity.md"
     fetched: 2026-04-18
     status: content-verified
     covers_questions: [4]
@@ -144,7 +144,7 @@ sources:
   - id: 13
     title: "AO/Openness Field from Ray Distances"
     url: "synthesized"
-    file: "2026-04-18-ao-openness-field.md"
+    file: "ao-openness-field.md"
     fetched: 2026-04-18
     status: content-verified
     covers_questions: [1]
@@ -156,7 +156,7 @@ sources:
   - id: 14
     title: "3D Skeleton Extraction Methods for Indoor Buildings"
     url: "synthesized"
-    file: "2026-04-18-3d-skeleton-extraction.md"
+    file: "3d-skeleton-extraction.md"
     fetched: 2026-04-18
     status: content-verified
     covers_questions: [3]
@@ -167,7 +167,7 @@ sources:
   - id: 15
     title: "Area Graph: Voronoi-Based with Room Detection"
     url: "https://springer.iq-technikum.de/article/10.1007/s11370-021-00392-5"
-    file: "2026-04-18-area-graph-voronoi.md"
+    file: "area-graph-voronoi.md"
     fetched: 2026-04-18
     status: content-verified
     covers_questions: [2, 3, 5]
@@ -178,7 +178,7 @@ sources:
   - id: 16
     title: "Bobkov et al. — Anisotropic Potential Fields"
     url: "https://ieeexplore.ieee.org/document/8019484"
-    file: "2026-04-18-bobkov-anisotropic.md"
+    file: "bobkov-anisotropic.md"
     fetched: 2026-04-18
     status: content-verified
     covers_questions: [5]
@@ -189,7 +189,7 @@ sources:
   - id: 17
     title: "Gudhi Persistent Homology for Cubical Complexes"
     url: "synthesized"
-    file: "2026-04-18-gudhi-cubical-persistence.md"
+    file: "gudhi-cubical-persistence.md"
     fetched: 2026-04-18
     status: content-verified
     covers_questions: [2, 5]
@@ -200,7 +200,7 @@ sources:
   - id: 18
     title: "Cells-and-Portals via BSP Trees"
     url: "synthesized"
-    file: "2026-04-18-cells-portals-bsp.md"
+    file: "cells-portals-bsp.md"
     fetched: 2026-04-18
     status: content-verified
     covers_questions: [2, 5]
@@ -211,7 +211,7 @@ sources:
   - id: 19
     title: "Recast Navigation Watershed-Based NavMesh"
     url: "synthesized"
-    file: "2026-04-18-recast-navigation.md"
+    file: "recast-navigation.md"
     fetched: 2026-04-18
     status: content-verified
     covers_questions: [1, 5]
