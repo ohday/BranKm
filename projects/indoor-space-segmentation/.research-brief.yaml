@@ -1,0 +1,54 @@
+topic: "Deterministic Indoor Space Segmentation from Voxelized Ray-Distance Fields"
+goal: >
+  Deeply understand deterministic geometric algorithms for partitioning complex
+  indoor environments (e.g. a large shopping mall interior) into semantic subzones
+  (rooms, corridors, halls) and detecting connection points (doors/openings) between
+  them. Starting from voxelized data where each voxel stores 26-directional ray
+  distances, collision types, and material info. Target depth: algorithmic detail
+  sufficient to evaluate trade-offs and implement the best approach in UE5 C++.
+audience: >
+  Strong UE5 C++ developer who already has a working voxelization system with
+  per-voxel 26-direction ray distances baked. Understands 3D geometry, graph theory
+  basics, and spatial data structures. Needs to understand the algorithmic options
+  for turning this voxel data into a zone partition with portal connections.
+key_questions:
+  - >
+    Q1: Distance-field-based spatial segmentation — How can 26-directional ray
+    distances be converted into a scalar field (SDF, Shape Diameter Function, or
+    similar) suitable for Watershed segmentation or Medial Axis Transform? What
+    are the algorithmic steps, and how does each method handle irregular room shapes,
+    L-shaped rooms, and open-plan areas?
+  - >
+    Q2: Chokepoint / bottleneck detection in 3D voxel grids — How to detect
+    spatial constrictions (doorways, narrow passages) between regions? Compare
+    graph-based minimum-cut approaches vs geometric cross-section area analysis
+    vs local distance-field gradient methods. What defines a "door-sized" bottleneck
+    vs a "corridor entrance"?
+  - >
+    Q3: Corridor detection and classification — Corridors are topologically and
+    geometrically distinct (elongated, high connectivity, roughly constant cross-section).
+    What are robust methods for identifying them? Compare morphological operations
+    (erosion/dilation on occupancy grid), skeleton/medial-axis extraction, and
+    aspect-ratio-based feature classification. How to handle T-junctions and
+    branching corridors?
+  - >
+    Q4: Spectral clustering for indoor space partitioning — How to construct
+    a voxel adjacency graph with meaningful edge weights (using ray distances as
+    affinity), apply spectral clustering (graph Laplacian eigenvectors), and
+    automatically determine the number of zones? What are the computational costs
+    for large voxel grids and what approximations exist (Nystrom, landmark-based)?
+  - >
+    Q5: Academic state-of-the-art survey — What are the latest methods (2018-2026)
+    in BIM/architecture, robotics SLAM, and game AI for indoor space segmentation
+    from volumetric/point-cloud data? Specifically looking for: (a) methods that
+    work on voxelized inputs, (b) deterministic (non-ML) approaches, (c) methods
+    that output both zone partitions and portal/connection geometry.
+scope_boundary: >
+  INCLUDE: Deterministic geometric/graph-theoretic algorithms for 3D indoor space
+  segmentation. Distance field analysis. Chokepoint detection. Corridor identification.
+  Spectral methods. Academic survey of relevant approaches.
+  EXCLUDE: Machine learning / neural network approaches. Door vs window classification.
+  UE5 rendering/audio system integration details. Multi-building or outdoor scenes.
+  Real-time performance (offline computation is acceptable).
+wiki_path: "F:/BranProjects/AIUE/_km/indoor-space-segmentation"
+mode: "new"

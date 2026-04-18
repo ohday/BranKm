@@ -1,0 +1,221 @@
+sources:
+  - id: 1
+    title: "IPA Room Segmentation Algorithms (Bormann et al.)"
+    url: "https://blog.csdn.net/jucat/article/details/138755341"
+    file: "2026-04-18-ipa-room-segmentation.md"
+    fetched: 2026-04-18
+    status: content-verified
+    covers_questions: [1, 2, 3]
+    key_claims:
+      - "Morphological: iterative erosion separates rooms by breaking connectivity at doorways"
+      - "Distance transform: sweep threshold to maximize disconnected regions; optimal threshold = doorway detection"
+      - "Voronoi: critical points with exactly 2 equidistant obstacles define room boundaries"
+      - "5 heuristic merging rules for Voronoi cells with specific thresholds"
+  - id: 2
+    title: "Hübner et al. — Voxel-Based Indoor Reconstruction and Room Partitioning"
+    url: "https://ar5iv.labs.arxiv.org/html/2002.07689"
+    file: "2026-04-18-hubner-voxel-reconstruction.md"
+    fetched: 2026-04-18
+    status: content-verified
+    covers_questions: [1, 2, 5]
+    key_claims:
+      - "5cm voxel size for indoor environments"
+      - "Rooms seeded from ceiling segments (connected components of Normal Down voxels)"
+      - "Wall openings detected as empty voxels below wall-labeled ceiling"
+      - "92% accuracy for office dataset"
+  - id: 3
+    title: "CGAL SDF-Based Mesh Segmentation"
+    url: "https://doc.cgal.org/5.6/Surface_mesh_segmentation/index.html"
+    file: "2026-04-18-cgal-sdf-segmentation.md"
+    fetched: 2026-04-18
+    status: content-verified
+    covers_questions: [1, 2]
+    key_claims:
+      - "SDF: 25 rays in 2π/3 cone, outlier removal, bilateral smoothing"
+      - "GMM soft clustering + alpha-expansion graph cut hard clustering"
+      - "Concave dihedral angles weighted 12.5x more than convex for boundary detection"
+      - "segmentation_from_sdf_values accepts any [0,1]-normalized scalar field"
+  - id: 4
+    title: "Nyström Approximation for Scalable Spectral Clustering"
+    url: "https://ar5iv.labs.arxiv.org/html/2006.14470"
+    file: "2026-04-18-nystrom-spectral-clustering.md"
+    fetched: 2026-04-18
+    status: content-verified
+    covers_questions: [4]
+    key_claims:
+      - "O(nml) complexity vs O(n²k) for exact spectral clustering"
+      - "Adaptive rank l via threshold γ=10⁻² on W spectrum"
+      - "Single pass over C matrix; outperforms alternatives especially for small m"
+      - "Uniform landmark sampling sufficient; m=40-320 for n up to 100k"
+  - id: 5
+    title: "3D Morphological Room Segmentation (Frías et al. 2020)"
+    url: "https://isprs-archives.copernicus.org/articles/XLIV-4-W1-2020/49/2020/"
+    file: "2026-04-18-3d-morphological-room-seg.md"
+    fetched: 2026-04-18
+    status: content-verified
+    covers_questions: [1, 2, 3]
+    key_claims:
+      - "3D erosion severs doorway connectivity; structuring element > half doorway width"
+      - "Per-cluster individual dilation prevents re-merging"
+      - "CropHull for empty space extraction"
+  - id: 6
+    title: "Watershed 3D Distance Field Room Segmentation — Synthesis"
+    url: "multiple"
+    file: "2026-04-18-watershed-3d-segmentation.md"
+    fetched: 2026-04-18
+    status: content-verified
+    covers_questions: [1, 2]
+    key_claims:
+      - "Marker-controlled watershed prevents over-segmentation"
+      - "Seeds from distance field local maxima"
+      - "Sphere packing alternative for seed generation"
+      - "Wavefront propagation for boundary refinement"
+  - id: 7
+    title: "Sphere Packing for 3D Room Segmentation (Li et al. 2021)"
+    url: "https://www.mdpi.com/2220-9964/10/11/739"
+    file: "2026-04-18-sphere-packing-room-seg.md"
+    fetched: 2026-04-18
+    status: content-verified
+    covers_questions: [1, 2]
+    key_claims:
+      - "VDB data structure for efficient volumetric storage"
+      - "Maximal inscribed spheres from distance field maxima"
+      - "Sphere graph connectivity encodes room topology"
+      - "Doorways = thin connections in sphere graph"
+  - id: 8
+    title: "Topological Persistence for Indoor Space Segmentation"
+    url: "synthesized"
+    file: "2026-04-18-topological-persistence.md"
+    fetched: 2026-04-18
+    status: content-verified
+    covers_questions: [2, 5]
+    key_claims:
+      - "Persistence diagram ranks bottlenecks by significance"
+      - "Merge tree = room hierarchy with doorway widths"
+      - "Single parameter: persistence threshold = minimum doorway width"
+      - "Gudhi CubicalComplex for 3D scalar field persistence"
+  - id: 9
+    title: "Chokepoint/Bottleneck Detection Methods — Synthesis"
+    url: "multiple"
+    file: "2026-04-18-chokepoint-detection.md"
+    fetched: 2026-04-18
+    status: content-verified
+    covers_questions: [2]
+    key_claims:
+      - "Min-cut on region adjacency graph identifies narrowest passages"
+      - "Cross-section area analysis with standard door size thresholds"
+      - "Distance field saddle points = chokepoint candidates"
+      - "Topological persistence for principled bottleneck ranking"
+  - id: 10
+    title: "Corridor Detection Methods — Synthesis"
+    url: "multiple"
+    file: "2026-04-18-corridor-detection.md"
+    fetched: 2026-04-18
+    status: content-verified
+    covers_questions: [3]
+    key_claims:
+      - "Aspect ratio > 3:1 indicates corridor"
+      - "Multi-scale erosion difference identifies corridor regions"
+      - "Graph degree ≥ 3 = corridor node, 1-2 = room node"
+      - "Skeleton branch point analysis for T-junctions"
+  - id: 11
+    title: "Fiedler Vector Spectral Bisection"
+    url: "synthesized"
+    file: "2026-04-18-fiedler-vector-bisection.md"
+    fetched: 2026-04-18
+    status: content-verified
+    covers_questions: [4]
+    key_claims:
+      - "Second eigenvector of Laplacian gives optimal bisection"
+      - "Recursive bisection for multi-way partitioning"
+      - "Normalized cut balances cluster sizes"
+  - id: 12
+    title: "Graph Laplacian Affinity Matrix Construction"
+    url: "synthesized"
+    file: "2026-04-18-graph-laplacian-affinity.md"
+    fetched: 2026-04-18
+    status: content-verified
+    covers_questions: [4]
+    key_claims:
+      - "5 affinity options including ray-distance-based"
+      - "Eigengap heuristic for automatic k selection"
+      - "Sparse Laplacian with 26-connectivity: ≤26N non-zeros"
+      - "ARPACK/Lanczos efficient for small k on large grids"
+  - id: 13
+    title: "AO/Openness Field from Ray Distances"
+    url: "synthesized"
+    file: "2026-04-18-ao-openness-field.md"
+    fetched: 2026-04-18
+    status: content-verified
+    covers_questions: [1]
+    key_claims:
+      - "AO fields outperform distance maps for cavity separation"
+      - "5 scalar field derivations from 26-direction rays"
+      - "Directional anisotropy directly useful for corridor detection"
+      - "Cross-section indicator from opposite ray pairs"
+  - id: 14
+    title: "3D Skeleton Extraction Methods for Indoor Buildings"
+    url: "synthesized"
+    file: "2026-04-18-3d-skeleton-extraction.md"
+    fetched: 2026-04-18
+    status: content-verified
+    covers_questions: [3]
+    key_claims:
+      - "Isthmus-based parallel thinning preserves topology"
+      - "Skeleton classifies spaces: long linear = corridors, star-shaped = rooms"
+      - "Branch points = connections/junctions"
+  - id: 15
+    title: "Area Graph: Voronoi-Based with Room Detection"
+    url: "https://springer.iq-technikum.de/article/10.1007/s11370-021-00392-5"
+    file: "2026-04-18-area-graph-voronoi.md"
+    fetched: 2026-04-18
+    status: content-verified
+    covers_questions: [2, 3, 5]
+    key_claims:
+      - "Improved Voronoi segmentation with room detection post-processing"
+      - "Dynamic threshold adapts to map structure"
+      - "Open source: github.com/STAR-Center/areaGraph"
+  - id: 16
+    title: "Bobkov et al. — Anisotropic Potential Fields"
+    url: "https://ieeexplore.ieee.org/document/8019484"
+    file: "2026-04-18-bobkov-anisotropic.md"
+    fetched: 2026-04-18
+    status: content-verified
+    covers_questions: [5]
+    key_claims:
+      - "Concavity-aware graph partitioning"
+      - "Works without Manhattan-world assumption"
+      - "Noise-resistant and unsupervised"
+  - id: 17
+    title: "Gudhi Persistent Homology for Cubical Complexes"
+    url: "synthesized"
+    file: "2026-04-18-gudhi-cubical-persistence.md"
+    fetched: 2026-04-18
+    status: content-verified
+    covers_questions: [2, 5]
+    key_claims:
+      - "CubicalComplex directly accepts 3D numpy arrays"
+      - "Dimension 0 persistence tracks connected components"
+      - "Near-linear computation for cubical complexes"
+  - id: 18
+    title: "Cells-and-Portals via BSP Trees"
+    url: "synthesized"
+    file: "2026-04-18-cells-portals-bsp.md"
+    fetched: 2026-04-18
+    status: content-verified
+    covers_questions: [2, 5]
+    key_claims:
+      - "Recursive BSP splitting using wall-aligned planes"
+      - "Portals generated on splitting planes, clipped against geometry"
+      - "Industry standard for indoor visibility (Doom/Quake heritage)"
+  - id: 19
+    title: "Recast Navigation Watershed-Based NavMesh"
+    url: "synthesized"
+    file: "2026-04-18-recast-navigation.md"
+    fetched: 2026-04-18
+    status: content-verified
+    covers_questions: [1, 5]
+    key_claims:
+      - "Industry-standard: voxelize → distance field → watershed → regions"
+      - "Region merging via minRegionArea/mergeRegionArea parameters"
+      - "Same conceptual pipeline as room segmentation"
