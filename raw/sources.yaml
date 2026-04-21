@@ -219,3 +219,167 @@ sources:
       - "Industry-standard: voxelize → distance field → watershed → regions"
       - "Region merging via minRegionArea/mergeRegionArea parameters"
       - "Same conceptual pipeline as room segmentation"
+
+  # =============================================================
+  # Project: acoustic-portal-baking (added 2026-04-21)
+  # =============================================================
+  - id: 20
+    title: "Steam Audio Pathing: Complete Source-Code-Level Breakdown"
+    file: "steam-audio-pathing-source-breakdown.md"
+    fetched: 2026-04-21
+    project: "acoustic-portal-baking"
+    type: synthesis
+    urls:
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/path_simulator.h
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/path_simulator.cpp
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/path_finder.h
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/path_finder.cpp
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/path_data.h
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/path_data.cpp
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/path_visibility.h
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/path_visibility.cpp
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/probe_batch.h
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/probe_tree.h
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/probe_tree.cpp
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/probe_generator.h
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/probe_generator.cpp
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/probe_manager.h
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/deviation.h
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/deviation.cpp
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/api_path_effect.cpp
+      - https://valvesoftware.github.io/steam-audio/doc/capi/guide.html
+    status: content-verified
+    covers_questions: [1, 5, 6, 7, 9, 10]
+    key_claims:
+      - "Steam Audio uses NO explicit portals - acoustic connectivity is encoded as a probe visibility graph"
+      - "Probes placed via uniform floor grid (spacing=2m, height=1.5m), NOT adaptive/Poisson-disk"
+      - "ProbeTree is a top-down median-split BVH over influence spheres (not k-d tree)"
+      - "Visibility graph built by pairwise testing i>j pairs, then symmetrized"
+      - "Baked pathing stores O(N^2) SoundPathRefs pointing into deduplicated unique-paths table"
+      - "SoundPath only stores first/last/afterFirst/beforeLast probes + distance + deviation"
+      - "Runtime: probeTree lookup + LOS test + path lookup + SH/EQ accumulation"
+      - "Diffraction = path-bend-angle into UTD formula with dummy wedge (n=2, L=0.05m)"
+      - "kMaxPaths=64, kMaxProbesPerBatch=8"
+      - "Runtime cost <100us per source; storage ~5-20MB for 1000-probe scene"
+  - id: 21
+    title: "Steam Audio Probe Placement and Visibility-Graph Construction"
+    file: "steam-audio-probe-placement.md"
+    fetched: 2026-04-21
+    project: "acoustic-portal-baking"
+    type: synthesis
+    urls:
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/probe_generator.h
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/probe_generator.cpp
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/probe_tree.h
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/probe_tree.cpp
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/path_visibility.h
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/path_visibility.cpp
+      - https://valvesoftware.github.io/steam-audio/doc/capi/guide.html
+    status: content-verified
+    covers_questions: [5, 6]
+    key_claims:
+      - "UniformFloor: downward rays from OBB top grid, multi-story via continuing below each hit"
+      - "Octree generation in enum but throws Exception - NOT IMPLEMENTED in OSS release"
+      - "ProbeTree: iterative median-split on largest-extent axis, SIMD-padded metadata"
+      - "Visibility modes: single-ray OR volumetric sphere samples (N^2 rays, threshold early-exit)"
+      - "Asymmetric range: strip vertical component before range check"
+      - "Edge cost = Euclidean distance, no material/angle penalty"
+      - "Graph symmetrization by last-finishing job via atomic counter"
+      - "Serialization stores only j<i lower triangle"
+  - id: 22
+    title: "UTD and Deviation-Based Diffraction: Steam Audio vs Tsingos 2001"
+    file: "utd-diffraction-steam-audio-vs-tsingos.md"
+    fetched: 2026-04-21
+    project: "acoustic-portal-baking"
+    type: synthesis
+    urls:
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/deviation.h
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/deviation.cpp
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/path_data.cpp
+      - https://pixl.cs.princeton.edu/pubs/Tsingos_2001_MAI/index.php
+      - https://europepmc.org/article/MED/15000186
+      - https://www.mdpi.com/2073-8994/12/4/654/xml
+      - https://www.researchgate.net/publication/2397824
+    status: content-verified
+    covers_questions: [7, 8, 9]
+    key_claims:
+      - "UTD formula: 4 cot terms with Fresnel transition function F(x)"
+      - "|D| scales as 1/sqrt(f) => natural low-pass diffraction"
+      - "Tsingos 2001: beam tracing over BSP enumerates diffracting edge sequences with real wedge params"
+      - "Steam Audio: replace real wedge geometry with path-bend-angle + dummy (n=2, L=0.05m)"
+      - "deviation = sum of turn angles at probe nodes along path"
+      - "EQ normalized relative to straight-path reference: D(angle,band)/D(1e-8,band)"
+      - "BTM is more accurate low-freq but 10x cost; Steam Audio avoids"
+      - "Tsingos shadow-region approximation: only compute diffraction when direct path occluded"
+  - id: 23
+    title: "Project Acoustics (Triton): Wave-Based Bake Contrast"
+    file: "project-acoustics-wave-based-contrast.md"
+    fetched: 2026-04-21
+    project: "acoustic-portal-baking"
+    type: synthesis
+    urls:
+      - https://www.microsoft.com/en-us/research/project/project-triton/
+      - https://www.microsoft.com/en-us/research/publication/adaptive-rectangular-decomposition-spectral-domain-decomposition-approach-fast-wave-solution-complex-scenes/
+      - https://arxiv.org/abs/2107.11548
+      - https://doi.org/10.1016/j.apacoust.2011.05.012
+      - https://github.com/microsoft/ProjectAcoustics
+    status: partial-verified
+    covers_questions: [7, 11]
+    key_claims:
+      - "ARD: decompose scene into cuboids, analytic DCT basis within each, FD interface stencils"
+      - "10-100x speedup over FDTD due to 3 pts/wavelength vs 10"
+      - "Per-probe output: onset, loudness, arrival direction, T60, D-to-R ratio, directional reverb"
+      - "Parametric encoding compresses N^2 IRs to ~100MB for full game level"
+      - "Runtime decode ~100us via parameter field interpolation"
+      - "2022.1: moved to voxel-free interpolator, voxels only for debug viz"
+      - "Raghuvanshi 2021 adds dynamic portal closure; search via precomputed propagation delay+direction"
+      - "Advantages: captures room modes, low-freq tunneling, correct arrival direction"
+      - "Disadvantages: hours-days bake on cluster, impractical for small studio/procedural"
+  - id: 24
+    title: "Automatic Acoustic Portal Detection Methods Survey (Voxel-based)"
+    file: "portal-detection-methods-acoustic.md"
+    fetched: 2026-04-21
+    project: "acoustic-portal-baking"
+    type: synthesis
+    urls:
+      - https://en.wikipedia.org/wiki/Portal_rendering
+      - https://www.freepatentsonline.net/y2012/0219198.html
+      - https://www.sciencedirect.com/science/article/pii/S0020025518304614
+      - https://www.researchgate.net/publication/316505389
+      - https://patents.justia.com/patent/20230188920
+      - https://arxiv.org/abs/2107.11548
+    status: content-verified
+    covers_questions: [1, 2, 3, 4]
+    key_claims:
+      - "Steam Audio evidence: explicit portals are NOT required - probe visibility graph encodes them implicitly"
+      - "Morphological opening + CC: simplest, multi-scale sweep, O(N) per radius"
+      - "SDF saddles via Hessian: gives position+normal, noise-sensitive"
+      - "Persistence on SDF: principled significance ranking via persistent homology (Gudhi)"
+      - "Min-cut: requires segmentation first - contradicts the pivot"
+      - "Acoustic threshold is wavelength-dependent: gap<λ/4 diffracts fully, gap>4λ geometric"
+      - "Useful acoustic portal range: 5cm-3m apertures for 125Hz-4kHz"
+      - "Recommended: morphological portals ONLY for hybrid (dynamic closure, reverb regions)"
+  - id: 25
+    title: "Runtime Acoustic Path Query Architecture"
+    file: "runtime-acoustic-path-query-architecture.md"
+    fetched: 2026-04-21
+    project: "acoustic-portal-baking"
+    type: synthesis
+    urls:
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/path_simulator.cpp
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/path_finder.cpp
+      - https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/src/core/probe_tree.cpp
+      - https://www.researchgate.net/profile/Ramon_Oliva/publication/257235867
+      - https://arxiv.org/abs/2107.11548
+    status: content-verified
+    covers_questions: [6, 9]
+    key_claims:
+      - "Direct LOS single-ray early-out handles most source-listener pairs"
+      - "Path lookup: O(1) array access for (src, lis) -> refs -> unique-paths"
+      - "A* with Euclidean heuristic only for dynamic alt-path recomputation"
+      - "Path simplification: greedy shortcutting via grandparent visibility"
+      - "Steam Audio does NOT use 3D funnel - probe centers give implicit path"
+      - "Multi-path incoherent energy sum: accumulate SH + EQ weighted by per-path weight*atten"
+      - "CSR format for visibility graph: cache-efficient alternative to vector-of-vectors"
+      - "Typical per-source <20us no-validation; 180us with segment validation"
+      - "Dynamic portal closure layered on top (Raghuvanshi 2021)"

@@ -1,0 +1,273 @@
+topic: "Acoustic Portal Baking for Complex Indoor Environments"
+slug: "acoustic-portal-baking"
+created: 2026-04-21
+revised: 2026-04-21
+
+goal: >
+  Design and deeply understand an offline baking pipeline that, starting
+  from an already-voxelized building (user has completed voxel baking
+  with customizable per-voxel attributes), automatically detects and
+  places acoustic portals, builds a probe graph, and precomputes
+  diffraction data, then answers runtime queries for
+  (1) source↔listener connectivity,
+  (2) shortest acoustic path length,
+  (3) diffracted propagation around portal edges
+  with zero manual annotation.
+
+  APPROACH: Geometric acoustics + UTD edge diffraction (Scheme A).
+  Wave-based methods (Project Acoustics) studied as contrast only.
+
+  PIVOT HISTORY: Earlier attempt assumed "segmentation → portals". We
+  discovered segmentation is ill-posed AND acoustics does not need
+  semantic rooms — only connectivity + attenuation across bottleneck
+  surfaces, plus diffraction around their edges.
+
+audience: >
+  Graphics/audio programmer who has already built the voxelization
+  pipeline. Comfortable with voxel grids, distance fields, graph
+  algorithms, basic linear algebra. Has consumed the previous
+  indoor-segmentation research. Needs source-code-level mechanistic
+  detail — wants to be able to modify Steam Audio's baked-pathing
+  algorithms, not just describe them.
+
+depth_target: "source-code-level"
+# Must understand Steam Audio's pathing to the function level; must
+# be able to prototype the full pipeline end-to-end in Python/C++.
+
+connectivity_level: "full-acoustic-path"
+# Boolean + path length + edge diffraction via UTD.
+# Frequency-banded transmission = stretch only.
+
+geometry_assumptions: >
+  Input: a voxel grid already baked by the user, with customizable
+  per-voxel attributes (occupancy, SDF, and any additional scalar
+  fields the algorithm requires). Geometry includes irregular /
+  semi-open spaces (atria, mezzanines, stairwells) AND
+  furniture-level occluders. No Manhattan-world assumption.
+
+deployment_target: "pure-algorithm"
+# Python/C++ reference implementations. NO UE5, NO Wwise, NO Blueprints.
+
+acoustic_model: "geometric-acoustics-utd"
+# Scheme A. Wave-based methods (FDTD/ARD/Project Acoustics) are only
+# studied as comparison benchmarks to understand the upper bound.
+
+input_contract:
+  given:
+    - "3D voxel grid of the building"
+    - "Per-voxel: solid/empty flag"
+    - "Per-voxel: signed distance to nearest solid"
+    - "User can add additional per-voxel fields if algorithms require"
+  not_in_scope:
+    - "Mesh → voxel conversion"
+    - "SDF construction algorithm"
+    - "Dynamic voxel updates"
+
+key_questions:
+
+  # ============================================================
+  # FOCUS 1: PORTAL AUTO-DETECTION & PLACEMENT  (CORE)
+  # ============================================================
+
+  - id: 1
+    priority: must
+    group: "theory"
+    question: >
+      What is the physical meaning of an acoustic portal, and why can
+      acoustic connectivity bypass explicit room segmentation?
+      Contrast visual portal (BSP/cells, binary visibility) with
+      acoustic portal (bottleneck surface with frequency-dependent
+      transmission and edge-diffracted propagation).
+
+  - id: 2
+    priority: must
+    group: "portal-detect"
+    question: >
+      [Candidate extraction] Given a voxel grid with SDF, how to
+      enumerate all candidate bottleneck surfaces directly? Compare:
+      (a) SDF saddle points / ridge lines
+      (b) min-cut on voxel-adjacency graph
+      (c) sublevel-set topological persistence on SDF
+      (d) Reeb graph of SDF
+      (e) medial-axis bottleneck analysis
+      (f) AO/openness field saddle analysis
+      Which is most robust for irregular / semi-open geometry, and
+      what additional per-voxel fields does each require?
+
+  - id: 3
+    priority: must
+    group: "portal-detect"
+    question: >
+      [Saliency filtering] From N candidate surfaces, how to select
+      the true portals? Discuss persistence lifetime, minimum cross-
+      section area, two-sided cavity-volume ratio, connectivity-cut
+      significance. How to simultaneously avoid false positives
+      (mid-corridor cross-sections) and false negatives (large
+      half-open apertures)?
+
+  - id: 4
+    priority: must
+    group: "portal-detect"
+    question: >
+      [Portal parameterization] Once a portal surface is identified,
+      what data should be stored per portal? Representative plane,
+      polygonal aperture outline, centroid, normal, effective area,
+      edge-point samples (for diffraction), material/thickness
+      (for transmission). Recommended in-memory layout and what
+      additional voxel fields must be baked to support all of this.
+
+  - id: 5
+    priority: must
+    group: "probe-graph"
+    question: >
+      [Probe placement] How to automatically distribute acoustic
+      probes (graph nodes) in free space? Compare Poisson-disk,
+      SDF-threshold sampling, medial-axis sampling, uniform-octree
+      adaptive refinement, coverage-maximizing greedy placement.
+      How does Steam Audio decide probe density in its probe
+      batches?
+
+  - id: 6
+    priority: must
+    group: "probe-graph"
+    question: >
+      [Graph connection] How to connect probe ↔ portal ↔ probe into
+      a usable graph? Visibility testing on the voxel grid,
+      acceleration structures, edge-weight initialization
+      (direct acoustic distance + initial transmission loss).
+
+  # ============================================================
+  # FOCUS 2: DIFFRACTION  (CORE)
+  # ============================================================
+
+  - id: 7
+    priority: must
+    group: "diffraction"
+    question: >
+      [Theory] UTD (Uniform Theory of Diffraction) fundamentals.
+      Why/how do sound waves diffract around edges? Keller cone,
+      diffraction coefficient derivation, frequency dependence
+      (low frequency diffracts strongly, high frequency goes
+      straight). Brief mention of BTM (Biot-Tolstoy-Medwin) as an
+      alternative for completeness — why Steam Audio chose
+      frequency-independent geometric approximation instead, and
+      what accuracy is lost.
+
+  - id: 8
+    priority: must
+    group: "diffraction"
+    question: >
+      [Offline diffraction bake] How to automatically identify
+      diffraction edges from detected portal polygons? Sample edge
+      points along the aperture, store per-edge properties (position,
+      tangent, both face normals, visible probe set). Offline
+      precompute table: for each triple (probe_i, edge_j, probe_k),
+      what diffracted path length + attenuation is stored?
+      Storage-scaling analysis and compression strategies.
+
+  - id: 9
+    priority: must
+    group: "diffraction"
+    question: >
+      [Runtime diffraction] Given dynamic (source, listener), compute
+      the shortest diffracted path in real time. 3D funnel algorithm
+      through a sequence of portal edges, analogous to NavMesh funnel
+      but in 3D. How to handle multi-portal chains (source behind
+      two corners)? How Steam Audio implements this at the function
+      level.
+
+  # ============================================================
+  # INDUSTRIAL REFERENCE (SOURCE-CODE DEPTH)
+  # ============================================================
+
+  - id: 10
+    priority: must
+    group: "industrial"
+    repository: "https://github.com/ValveSoftware/steam-audio/tree/master"
+    question: >
+      Full SOURCE-CODE-LEVEL breakdown of Steam Audio's baked pathing.
+      Primary source: the open-source repo at
+      https://github.com/ValveSoftware/steam-audio/tree/master
+      (C++ core under core/src/core/).
+
+      Targets to dissect:
+        - Probe batch data layout and generation
+          (likely probe_batch.cpp / probe_generator.cpp or similar)
+        - Baking pipeline: visibility testing + shortest-path
+          precomputation (baked_path_data, path_baker)
+        - Runtime path lookup + interpolation
+        - Diffraction path search (edge detection, UTD application,
+          3D funnel / shortest diffracted path)
+        - Scene / static-mesh representation feeding into the baker
+
+      Goal: function-level understanding sufficient to modify or port
+      the algorithms to a custom voxel-based pipeline.
+
+  - id: 11
+    priority: should
+    group: "industrial"
+    question: >
+      Microsoft Project Acoustics: how wave-based offline simulation
+      (ARD / FDTD?) + parametric encoding achieves compact runtime
+      lookup. What does it capture that geometric + UTD misses
+      (resonance, room modes, low-frequency diffraction)? Treat as
+      contrast only — no source-code depth required.
+
+  # ============================================================
+  # STRETCH
+  # ============================================================
+
+  - id: 12
+    priority: stretch
+    group: "stretch"
+    question: >
+      Frequency-banded transmission through walls (impedance-based,
+      octave-band filter per portal edge).
+
+  - id: 13
+    priority: stretch
+    group: "stretch"
+    question: >
+      Incremental portal-graph updates for dynamic geometry
+      (destruction, opening doors).
+
+scope_boundary: >
+  IN scope:
+    - Algorithms on top of an already-voxelized building
+    - Automatic portal candidate extraction, saliency filtering, parameterization
+    - Automatic probe placement and graph construction
+    - UTD-based diffraction (theory + offline bake + runtime search)
+    - Steam Audio source-code-level dissection
+    - Project Acoustics as contrast (no source-code depth)
+    - Python / C++ reference implementations
+  OUT of scope:
+    - Mesh → voxel conversion, SDF construction
+    - Explicit room / space segmentation
+    - UE5 / Wwise / engine integration
+    - Real-time wave simulation
+    - HRTF, spatialization, reverb tail
+    - Material authoring UI
+
+existing_raw_sources:
+  - id: 8
+    file: "topological-persistence.md"
+    relevance: "Persistence ranks bottlenecks by significance. Re-interpret as portal saliency metric for Q3."
+    related_questions: [2, 3]
+  - id: 9
+    file: "chokepoint-detection.md"
+    relevance: "Min-cut, saddle, cross-section methods. Re-interpret as portal candidate extractors for Q2."
+    related_questions: [2]
+  - id: 13
+    file: "ao-openness-field.md"
+    relevance: "Openness field saddles as alternative to SDF saddles for Q2."
+    related_questions: [2, 3]
+  - id: 17
+    file: "gudhi-cubical-persistence.md"
+    relevance: "Practical 3D persistence implementation on voxel grids."
+    related_questions: [2, 3]
+  - id: 18
+    file: "cells-portals-bsp.md"
+    relevance: "Visual portal baseline for Q1 contrast."
+    related_questions: [1]
+
+mode: "new"
