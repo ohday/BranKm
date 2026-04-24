@@ -8,3 +8,9 @@
 ## [2026-04-21] websearch | acoustic-portal-baking | Research complete (+6 raw sources)
 
 ## [2026-04-21] wiki | acoustic-portal-baking | 12 pages created
+
+## [2026-04-24] explore | ai-swing-reminder-hkcn | Topic defined
+
+## [2026-04-24] websearch | ai-swing-reminder-hkcn | Research complete (+8 raw sources, 8/8 questions covered)
+
+## [2026-04-24] wiki | ai-swing-reminder-hkcn | 10 pages created

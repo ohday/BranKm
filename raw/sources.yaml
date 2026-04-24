@@ -383,3 +383,186 @@ sources:
       - "CSR format for visibility graph: cache-efficient alternative to vector-of-vectors"
       - "Typical per-source <20us no-validation; 180us with segment validation"
       - "Dynamic portal closure layered on top (Raghuvanshi 2021)"
+  - id: 26
+    title: "A 股 + 港股数据源全景对比（AkShare / Tushare Pro / Baostock / Futu / Longbridge）"
+    file: "stock-data-sources-cn-hk.md"
+    fetched: 2026-04-24
+    project: "ai-swing-reminder-hkcn"
+    type: synthesis
+    urls:
+      - https://github.com/akfamily/akshare
+      - https://tushare.pro/document/1?doc_id=290
+      - https://openapi.futunn.com/futu-api-doc/en/intro/intro.html
+      - https://finance.ifeng.com/a/20161012/14932722_0.shtml
+      - https://xueqiu.com/6083412391/233356058
+      - https://open.longportapp.cn/zh-CN/docs/index
+      - https://open.longbridge.com/zh-CN/docs/qa/general
+      - https://baijiahao.baidu.com/s?id=1829031498578754242
+      - https://shimo.im/docs/PGWdY6Q8xDKpvDXG
+      - http://baostock.com/baostock/index.php
+    status: content-verified
+    covers_questions: [1]
+    key_claims:
+      - "AkShare 18.5k star MIT 免费，港股+A股+期货+宏观全覆盖，但依赖上游网站稳定性差"
+      - "Tushare Pro 120 积分免费档只有不复权日线；2000 积分 200/年；港股日线单独 1000/年"
+      - "Baostock BSD 完全免费无 token，但只覆盖 A 股，不含港股/期货"
+      - "Futu OpenAPI 港股 LV2 对中国大陆个人免费（富途年承担 1000 万港币成本）"
+      - "Futu 需要 OpenD 本地 daemon 7x24 在线，Longbridge 无 daemon 更轻量"
+      - "Longbridge 交易限频 30s<=30 次, 错误码 301606, SDK 不内置交易限流"
+  - id: 27
+    title: "回测框架对比：Qlib / Backtrader / vn.py / Zipline-cn / bt"
+    file: "backtest-frameworks-qlib-backtrader-vnpy.md"
+    fetched: 2026-04-24
+    project: "ai-swing-reminder-hkcn"
+    type: synthesis
+    urls:
+      - https://github.com/microsoft/qlib
+      - https://www.backtrader.com/
+      - https://github.com/vnpy/vnpy
+    status: content-verified
+    covers_questions: [2]
+    key_claims:
+      - "Qlib 因子缓存 +E+D 比 HDF5 单 CPU 快 25x (7.4s vs 184.4s 对 800 股 13 年 14 因子)"
+      - "Qlib Alpha158/360 同时支持 US + China Market 但港股需自行 CSV→bin 适配"
+      - "Qlib 内置 20+ 模型：XGBoost/LGB/CatBoost/LSTM/GRU/Transformer/TCN/TFT/TabNet/DoubleEnsemble"
+      - "Qlib-RL 面向订单执行（TWAP/PPO/OPDS），不是策略级 RL"
+      - "Backtrader 2019 后维护停滞但代码完整，OCO/Bracket/StopTrail 订单语义丰富"
+      - "vnpy 4.3 (2025-12) 机构实盘事实标准，CTP/XTP/Tora 柜台，4.0 加 vnpy.alpha 模块复刻 Qlib Alpha158"
+      - "本项目推荐：Qlib（ML路线主干）+ Backtrader（规则派），不选 vnpy（太重）"
+  - id: 28
+    title: "AI 帮构建策略：四路线对比（LLM 规则 / RL / Multi-Agent / LLM 因子挖掘）"
+    file: "ai-strategy-construction-four-routes.md"
+    fetched: 2026-04-24
+    project: "ai-swing-reminder-hkcn"
+    type: synthesis
+    urls:
+      - https://github.com/TauricResearch/TradingAgents
+      - https://arxiv.org/abs/2412.20138
+      - https://github.com/hsliuping/TradingAgents-CN
+      - https://github.com/AI4Finance-Foundation/FinRL
+      - https://github.com/AI4Finance-Foundation/FinGPT
+      - https://github.com/pipiku915/FinMem-LLM-StockTrading
+      - https://arxiv.org/abs/2311.13743
+      - https://arxiv.org/abs/2308.00016
+      - https://arxiv.org/abs/2402.09746
+      - https://github.com/virattt/ai-hedge-fund
+      - https://blog.csdn.net/benshu_001/article/details/149693611
+    status: content-verified
+    covers_questions: [3]
+    key_claims:
+      - "四路线：A LLM规则生成（Claude+Qlib）/ B RL（FinRL）/ C Multi-Agent（TradingAgents-CN）/ D LLM因子挖掘（Alpha-GPT）"
+      - "TradingAgents-CN (hsliuping) 24.6k star，A+HK+US + Qwen/DeepSeek + Docker 5 分钟部署，最接近本项目目标"
+      - "TradingAgents-CN 不做触发推送，仅出研报；v2.0 将闭源，fork 需锁定 v1.x"
+      - "FinRL 支持 AkShare/Baostock/JoinQuant/RiceQuant/Tushare 多中国数据源，算法 A2C/DDPG/PPO/TD3/SAC"
+      - "TradingAgents 单次分析 10-20 LLM calls，GPT-4 级约 0.5-5 USD/次/股"
+      - "Alpha-GPT 1.0/2.0 无公开代码，只能读论文参考"
+      - "FinGPT 不是因子挖掘是 LLM 微调（LoRA），单次 <300 USD，7 种基座 Llama/Qwen/ChatGLM2/Falcon 等"
+      - "本项目推荐主路线 A + 辅路线 C，不上 B/D"
+  - id: 29
+    title: "开源仓库深度清单（波段 + A/HK + 中级）"
+    file: "open-source-repos-tier-list.md"
+    fetched: 2026-04-24
+    project: "ai-swing-reminder-hkcn"
+    type: synthesis
+    urls:
+      - https://github.com/microsoft/qlib
+      - https://github.com/AI4Finance-Foundation/FinRL
+      - https://github.com/TauricResearch/TradingAgents
+      - https://github.com/hsliuping/TradingAgents-CN
+      - https://github.com/virattt/ai-hedge-fund
+      - https://github.com/vnpy/vnpy
+      - https://github.com/thuquant/awesome-quant
+      - https://github.com/shidenggui/easytrader
+      - https://github.com/akfamily/akshare
+      - https://dict.thinktrader.net/nativeApi/start_now.html
+    status: content-verified
+    covers_questions: [4]
+    key_claims:
+      - "Tier-1 必 fork: TradingAgents-CN + Qlib + Backtrader + AkShare + Futu OpenAPI"
+      - "Tier-2 参考: FinRL + ai-hedge-fund + FinGPT + Longbridge + Baostock"
+      - "Tier-3 了解: vnpy + easytrader + Qbot + FinMem"
+      - "QMT/xtquant 需 50 万资金门槛，Ptrade 需 100 万，机构柜台 500 万起"
+      - "easytrader GUI 模拟 2024 新规下属违规程序化交易，可能被封号"
+  - id: 30
+    title: "策略 → 信号 → 提醒：工程架构与推送渠道"
+    file: "signal-dispatch-architecture.md"
+    fetched: 2026-04-24
+    project: "ai-swing-reminder-hkcn"
+    type: synthesis
+    urls:
+      - https://core.telegram.org/bots/api
+      - https://github.com/Finb/Bark
+      - https://sct.ftqq.com/
+      - https://blog.csdn.net/weixin_29009401/article/details/148544017
+    status: content-verified
+    covers_questions: [5]
+    key_claims:
+      - "波段场景用轮询模式（每日 15:10+16:10 双 cron）足够，不必事件驱动"
+      - "企业微信群机器人每分钟 20 条上限，4096 字节 markdown，错误码 45009"
+      - "Telegram Bot 同 chat 每秒 1 条，全局 30 条/秒，中国大陆需代理"
+      - "Bark 支持 level=critical/timeSensitive 穿透 iOS 勿扰"
+      - "三级预警架构：L1 wecom / L2 wecom+telegram / L3 三通道并发"
+      - "信号去重 (sig_id, date) 幂等 + cooldown N 日防抖 + 多源确认 score 分级"
+  - id: 31
+    title: "OpenClaw 承载方案：Skill + VPS + 存储选型"
+    file: "openclaw-hosting-architecture.md"
+    fetched: 2026-04-24
+    project: "ai-swing-reminder-hkcn"
+    type: synthesis
+    urls:
+      - https://2048ai.net/69a28da454b52172bc5e1758.html
+      - https://blog.csdn.net/quyixiao/article/details/160382493
+      - https://developer.aliyun.com/article/1718611
+      - https://blog.51cto.com/passjava/14552278
+      - https://openclaw.ai/
+    status: content-verified
+    covers_questions: [6]
+    key_claims:
+      - "SKILL.md 格式：YAML frontmatter + Markdown runbook body，metadata 单行 JSON"
+      - "Skill 目录: scripts/（执行） + references/（读入 context） + assets/（不入 context）"
+      - "Skill 优先级: workspace > ~/.openclaw/skills > bundled"
+      - "Secrets: openclaw.json 的 skills.entries.<name>.env 或 .env 文件，requires.env 做 gating"
+      - "Cron 引擎: ~/.openclaw/cron/jobs.json + runs/<jobId>.jsonl，标准 5 段或 Quartz 7 段"
+      - "VPS 推荐腾讯云香港轻量（12 USD/月）单节点，富途 OpenAPI 延迟 1-3ms"
+      - "存储: SQLite 事务 + Parquet 历史 + DuckDB 分析查询"
+  - id: 32
+    title: "合规红线 + 港股下单 API 实战"
+    file: "compliance-and-hk-trading-api.md"
+    fetched: 2026-04-24
+    project: "ai-swing-reminder-hkcn"
+    type: synthesis
+    urls:
+      - https://www.csrc.gov.cn/csrc/c100028/c7480577/content.shtml
+      - https://www.gov.cn/gongbao/2024/issue_11426/202406/content_6959680.html
+      - https://mrdx.cn/h5/mrdx/content/20240711/Articel05006GN.htm
+      - https://www.cnr.cn/jingji/gundong/20240610/t20240610_526737217.shtml
+      - https://open.longportapp.cn/zh-CN/docs/index
+      - https://openapi.futunn.com/
+      - https://github.com/tigerfintech/openapi-python-sdk
+    status: content-verified
+    covers_questions: [7]
+    key_claims:
+      - "A 股 2024-10-08 起实施《程序化交易管理规定（试行）》，个人投资者同等适用"
+      - "高频认定: 申报>=300 笔/秒 或 单日>=20000 笔；本项目日频不触发"
+      - "纯提醒模式不属于程序化交易（上交所明确投资建议/咨询不算）"
+      - "Futu OpenAPI 港股 LV2 免费 + 最低佣金 3 HKD，Longbridge 无本地 daemon，Tiger 港股最贵"
+      - "大陆居民海外证券账户需申报全球个税 + 5 万美元/年购汇额度限制"
+      - "半自动工作流: 提醒 → Telegram 确认指令 → Futu 下单，永远人工确认"
+  - id: 33
+    title: "端到端 Pipeline: 自然语言偏好 → 上线提醒 完整模板"
+    file: "end-to-end-pipeline-template.md"
+    fetched: 2026-04-24
+    project: "ai-swing-reminder-hkcn"
+    type: synthesis
+    urls:
+      - https://blog.quantinsti.com/walk-forward-optimization-introduction/
+      - https://github.com/microsoft/qlib
+      - https://github.com/hsliuping/TradingAgents-CN
+    status: content-verified
+    covers_questions: [8]
+    key_claims:
+      - "7 步 pipeline: 偏好描述→Claude 生成代码→回测解读→WF 验证→OpenClaw skill→港股下单→周报复盘"
+      - "Walk-Forward 典型配置: 5 年训练 + 1 年测试 + 1 年步长，6 个 cycle"
+      - "WFO 合格线: 所有 OOS Sharpe>0, OOS/IS>=50%, 最差 OOS DD<20%, 相邻周期参数连续"
+      - "月开销估算 <200 CNY：腾讯云 12 USD + Tushare 17 CNY + LLM API 50-100 CNY"
+      - "Claude 在 pipeline 中的 5 种角色: 代码生成/报告解读/参数敏感性/周报/月度 recalibration"
