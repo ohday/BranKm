@@ -16,39 +16,39 @@ updated: 2026-04-24
 
 ```mermaid
 flowchart TB
-    O["1. 项目总览<br/>系统架构 · 核心决策"]
+    O["① 项目总览<br/>系统架构 · 核心决策"]
 
-    subgraph L1 ["① 数据层"]
-        P2["2. A股+港股数据源选型"]
+    subgraph L1 ["数据层"]
+        P2["② A股+港股数据源选型"]
     end
 
-    subgraph L2 ["② 回测层"]
-        P3["3. 回测框架 Qlib/Backtrader 分工"]
+    subgraph L2 ["回测层"]
+        P3["③ 回测框架 Qlib/Backtrader 分工"]
     end
 
-    subgraph L3 ["③ AI 构建策略层"]
-        P4["4. AI 构建策略的四条路线"]
-        P5["5. TradingAgents-CN 深度解析"]
+    subgraph L3 ["AI 构建策略层"]
+        P4["④ AI 构建策略的四条路线"]
+        P5["⑤ TradingAgents-CN 深度解析"]
     end
 
     subgraph L4 ["Tier 清单"]
-        P6["6. 开源仓库 Tier 清单"]
+        P6["⑥ 开源仓库 Tier 清单"]
     end
 
-    subgraph L5 ["④ 信号分发"]
-        P7["7. 信号分发工程架构"]
+    subgraph L5 ["信号分发"]
+        P7["⑦ 信号分发工程架构"]
     end
 
-    subgraph L6 ["⑤ 承载"]
-        P8["8. OpenClaw 承载方案"]
+    subgraph L6 ["承载"]
+        P8["⑧ OpenClaw 承载方案"]
     end
 
     subgraph L7 ["合规 + 下单"]
-        P9["9. 合规红线与港股下单 API"]
+        P9["⑨ 合规红线与港股下单 API"]
     end
 
     subgraph L8 ["端到端"]
-        P10["10. 端到端 Pipeline 模板"]
+        P10["⑩ 端到端 Pipeline 模板"]
     end
 
     O --> P2
