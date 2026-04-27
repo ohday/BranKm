@@ -566,3 +566,253 @@ sources:
       - "WFO 合格线: 所有 OOS Sharpe>0, OOS/IS>=50%, 最差 OOS DD<20%, 相邻周期参数连续"
       - "月开销估算 <200 CNY：腾讯云 12 USD + Tushare 17 CNY + LLM API 50-100 CNY"
       - "Claude 在 pipeline 中的 5 种角色: 代码生成/报告解读/参数敏感性/周报/月度 recalibration"
+
+  # =============================================================
+  # Project: ai-stock-picker-hkcn (added 2026-04-28)
+  # =============================================================
+  - id: 34
+    title: "中国版美林投资时钟（泽平宏观改良版）"
+    file: "china-merrill-clock-industry-rotation.md"
+    fetched: 2026-04-28
+    project: "ai-stock-picker-hkcn"
+    type: single-source
+    url: https://finance.sina.com.cn/roll/2021-02-24/doc-ikftpnny9346839.shtml
+    status: content-verified
+    covers_questions: [2]
+    key_claims:
+      - "中国改良版以货币周期 + 信用周期代替产出缺口 + 通胀（准确率 40% → 73%）"
+      - "四阶段：衰退（宽货币紧信用）/ 复苏（双宽）/ 过热（紧货币宽信用）/ 滞胀（双紧）"
+      - "美国传统时钟在中国直接套用准确率仅 40%"
+      - "政策干预（2015 资金市/2016 供给侧）会打乱时钟节奏"
+
+  - id: 35
+    title: "Qlib Alpha158 因子完整定义（源码级）"
+    file: "qlib-alpha158-factor-definitions.md"
+    fetched: 2026-04-28
+    project: "ai-stock-picker-hkcn"
+    type: single-source
+    url: https://raw.githubusercontent.com/microsoft/qlib/main/qlib/contrib/data/loader.py
+    status: content-verified
+    covers_questions: [3, 5]
+    key_claims:
+      - "9 KBAR + 4 Price + 140 Rolling (28类x5窗口) = 153 默认特征"
+      - "默认窗口 [5,10,20,30,60]，28 类 Rolling 覆盖趋势/均值/波动/量价"
+      - "Label 默认 T+1 到 T+2 前瞻收益（截面选股范式）"
+      - "Alpha158 完全不含基本面，需自扩展"
+
+  - id: 36
+    title: "动态情景多因子 Alpha 模型（A 股实证）"
+    file: "dynamic-multifactor-alpha-model-ashare.md"
+    fetched: 2026-04-28
+    project: "ai-stock-picker-hkcn"
+    type: single-source
+    url: https://j519lee.blog.csdn.net/article/details/117508587
+    status: content-verified
+    covers_questions: [1, 3, 5]
+    key_claims:
+      - "A 股八大因子：MV/BP/EP/SP/EquityGrowth/ROE/CMRA/IVFF/DTOA/RSTR/STOQ"
+      - "IC_adj = corr(f_pure, r_residual) 行业+市值双中性化"
+      - "IR 加权 w_i = IC均值/IC标准差，滚动 12 月"
+      - "动态情景分层（而非行业内）的打分精度 > 全市场统一"
+
+  - id: 37
+    title: "A 股风险承受能力测评（C1-C5）与适当性管理"
+    file: "c1-c5-investor-suitability-assessment.md"
+    fetched: 2026-04-28
+    project: "ai-stock-picker-hkcn"
+    type: synthesis
+    urls:
+      - https://www.csrc.gov.cn/csrc/c101895/c1370704/content.shtml
+    status: content-verified
+    covers_questions: [6]
+    key_claims:
+      - "法定 C1-C5 五级划分（2017-07-01 实施）"
+      - "双维度判定 min(Capacity, Tolerance) 原则"
+      - "标准题 5 类：经验/目标/风险偏好/流动性/知识"
+      - "每 2 年重评或事件触发"
+
+  - id: 38
+    title: "A+HK 行业分类体系对比（申万/中信/恒生）"
+    file: "industry-classification-a-hk-shenwan-citic-hangseng.md"
+    fetched: 2026-04-28
+    project: "ai-stock-picker-hkcn"
+    type: synthesis
+    urls:
+      - https://xueqiu.com/6525665995/303392682
+      - https://www.cs.com.cn/qs/202106/t20210623_6177922.html
+      - https://www.chinanews.com.cn/cj/2024/03-22/10185200.shtml
+    status: content-verified
+    covers_questions: [2, 4, 5]
+    key_claims:
+      - "申万 31 一级/134 二级/346 三级；中信 30/109/285"
+      - "申万量化首选，中信投研首选"
+      - "恒生 2024 调整 12 一级/31 二级/105 三级"
+      - "跨市场对应一级 → 二三级需自行主业细匹配"
+
+  - id: 39
+    title: "A 股市场机制：涨跌停/ST/退市/注册制（2024 新规）"
+    file: "a-share-market-mechanics-price-limit-st-delisting.md"
+    fetched: 2026-04-28
+    project: "ai-stock-picker-hkcn"
+    type: synthesis
+    urls:
+      - https://www.csrc.gov.cn/
+      - https://www.sse.com.cn/
+      - https://www.szse.cn/
+    status: content-verified
+    covers_questions: [4, 8]
+    key_claims:
+      - "主板 ±10%/双创 ±20%/北交所 ±30%/ST ±5%"
+      - "面值退 1 元 / 市值退 2024 年提至 5 亿"
+      - "2024 新规：造假 2 亿 + 30% 即退，分红不达标 ST"
+      - "技术动量因子必须按板块归一化"
+
+  - id: 40
+    title: "港股市场特色机制（T+0 / 做空 / 老千股 / 南下）"
+    file: "hk-market-specifics-t0-short-selling-southbound.md"
+    fetched: 2026-04-28
+    project: "ai-stock-picker-hkcn"
+    type: synthesis
+    urls:
+      - https://licai.cofool.com/ask/vipqa_5065887_36176321.html
+      - https://news.hstong.com/post/content/19102114240795924
+      - https://www.stcn.com/article/detail/3492367.html
+      - https://www.stcn.com/article/detail/3503137.html
+      - https://epaper.cs.com.cn/zgzqb/html/2025-09/03/nw.D110000zgzqb_20250903_1-A05.htm
+    status: content-verified
+    covers_questions: [4, 8]
+    key_claims:
+      - "港股通不支持融券，单股卖空比例上限 20%"
+      - "老千股 8 项识别：仙股/频繁供股合股/低公众流通/频繁改名"
+      - "2025 南下破 5 万亿，未来 5 年预测增量 10 万亿"
+      - "哑铃策略：进攻端（科技/新消费）+ 防守端（高股息）"
+
+  - id: 41
+    title: "AkShare 选股数据接口全集"
+    file: "akshare-stock-picker-interfaces-comprehensive.md"
+    fetched: 2026-04-28
+    project: "ai-stock-picker-hkcn"
+    type: synthesis
+    urls:
+      - https://akshare.akfamily.xyz/
+      - https://zhuanlan.zhihu.com/p/692666826
+      - https://cloud.tencent.com/developer/article/1745040
+      - https://zhuanlan.zhihu.com/p/482691225
+      - https://zhuanlan.zhihu.com/p/22607644143
+    status: content-verified
+    covers_questions: [5]
+    key_claims:
+      - "stock_hsgt_board_rank_em 是 KQ2 行业选择核心接口"
+      - "stock_lhb_detail_em 龙虎榜 21 字段"
+      - "港股全市场扫描用 stock_hk_spot_em"
+      - "AkShare 覆盖 ~85% 需求，Tushare 补一致预期"
+
+  - id: 42
+    title: "选股分层（核心池/观察池/候选池）体系设计"
+    file: "stock-pool-tier-design-core-watch-candidate.md"
+    fetched: 2026-04-28
+    project: "ai-stock-picker-hkcn"
+    type: synthesis
+    urls:
+      - https://xueqiu.com/9247917663/151124585
+      - https://xueqiu.com/6185024260/383490604
+      - https://www.toutiao.com/article/7579659069527441966/
+      - https://baike.baidu.com/item/%E8%82%A1%E7%A5%A8%E6%B1%A0%E5%88%9B%E5%BB%BA%E5%8E%9F%E5%88%99
+    status: content-verified
+    covers_questions: [7]
+    key_claims:
+      - "3 层池：候选 100-200 / 观察 30-50 / 核心 5-15"
+      - "仓位分配：核心 50-60% / 机会 30-40% / 观察 0-10%"
+      - "升降级量化规则 + 月度审查"
+      - "输出含：得分/亮点/风险/催化剂/合规提示"
+
+  - id: 43
+    title: "五大投资流派（价值/成长/质量/红利/动量 + CANSLIM + Magic Formula）"
+    file: "five-investment-styles-canslim-magic-formula.md"
+    fetched: 2026-04-28
+    project: "ai-stock-picker-hkcn"
+    type: synthesis
+    urls:
+      - https://baike.baidu.com/item/CANSLIM%E6%B3%95%E5%88%99
+      - https://www.magicformulainvesting.com
+      - https://wiki.mbalib.com/zh-tw/CANSLIM%E9%80%89%E8%82%A1%E6%96%B9%E6%B3%95
+    status: content-verified
+    covers_questions: [1]
+    key_claims:
+      - "五派核心指标、代表人物、适用周期完整对照"
+      - "Greenblatt 神奇公式：ROC + Earnings Yield 双指标机械排名"
+      - "CANSLIM 七要素：C>=20%, A>=25-30%, S 放量 50%, L RPS>=80, 止损 -7~-8%"
+      - "Fama-French 无动量，Carhart 加 Mom 形成四因子"
+
+  - id: 44
+    title: "A 股行业景气度三维扫描（华宝证券）"
+    file: "industry-prosperity-three-dim-framework.md"
+    fetched: 2026-04-28
+    project: "ai-stock-picker-hkcn"
+    type: single-source
+    url: http://epaper.mrjjxw.com/shtml/mrjjxw/20250909/255331.shtml
+    status: content-verified
+    covers_questions: [2]
+    key_claims:
+      - "三维：营收/净利/ROE 同比增速的环比增长率（二阶导数）"
+      - "阈值：Delta g > 0 即景气（方向性而非数值阈值）"
+      - "2025 中期：机场航运/军工电子/风电设备综合景气居前"
+      - "滞涨景气板块（低涨幅+高景气）性价比最高"
+
+  - id: 45
+    title: "选股硬否决清单（A+HK）与 Beneish M-Score"
+    file: "stock-picker-hard-veto-and-soft-warnings.md"
+    fetched: 2026-04-28
+    project: "ai-stock-picker-hkcn"
+    type: synthesis
+    urls:
+      - https://papers.ssrn.com/sol3/papers.cfm?abstract_id=8392
+      - https://stock.jrj.com.cn/2018/11/20083325377617.shtml
+      - https://finance.ce.cn/stock/gsgdbd/202112/03/t20211203_37137387.shtml
+      - https://www.csrc.gov.cn/shenzhen/c105614/c1575188/content.shtml
+      - https://news.jcrb.com/jsxw/2025/202503/t20250315_6872234.html
+    status: content-verified
+    covers_questions: [4, 8]
+    key_claims:
+      - "A 股 10 条硬否决（ST/面值/商誉>30%/质押>80% 等）"
+      - "港股 9 条硬否决（仙股/供股合股/公众<25%/卖空>10% 等）"
+      - "Beneish M-Score 公式 + A 股阈值本土化至 -1.89 ~ -2.0"
+      - "TATA 对 A 股最敏感；价值/动量陷阱识别标准"
+
+  - id: 46
+    title: "个股 12 维度选股体系（新手友好 + 周期权重矩阵）"
+    file: "12-dimension-stock-picking-framework.md"
+    fetched: 2026-04-28
+    project: "ai-stock-picker-hkcn"
+    type: synthesis
+    urls:
+      - https://j519lee.blog.csdn.net/article/details/117508587
+      - https://xueqiu.com/1653195452/160311683
+      - https://www.stcn.com/article/detail/490641.html
+      - https://wiki.mbalib.com/zh-tw/CANSLIM%E9%80%89%E8%82%A1%E6%96%B9%E6%B3%95
+    status: content-verified
+    covers_questions: [3, 5]
+    key_claims:
+      - "12 维度：估值/成长/质量/护城河/动量/技术/量价/资金流/分红/治理/风险/催化"
+      - "长/中/波段三周期权重矩阵"
+      - "流派 x 维度交叉矩阵（5 派x12 维）"
+      - "每维配 what/why/how/trap/data 五段式"
+
+  - id: 47
+    title: "Socratic 引导问卷设计（stock-profile.yaml）"
+    file: "socratic-questionnaire-stock-profile-design.md"
+    fetched: 2026-04-28
+    project: "ai-stock-picker-hkcn"
+    type: synthesis
+    urls:
+      - https://www.csrc.gov.cn/
+      - https://www.morningstar.cn/article/AR00000882
+      - https://psycnet.apa.org/record/1979-24396-001
+      - https://www.forbes.com/sites/marcgerstein/2016/01/27/evaluating-client-needs-regulators-1-robo-advisers-0/
+    status: content-verified
+    covers_questions: [6]
+    key_claims:
+      - "stock-profile.yaml 完整字段（user/risk/goal/style/horizon/market/behavior/output）"
+      - "Cold Start 15 题 + 日常精简 5 题 + 行为校准 mapping 表"
+      - "场景化题 > 直问（Q6-Q9 四题核心）"
+      - "min(Capacity, Tolerance) 双维度判定法"
