@@ -1,0 +1,40 @@
+topic: "HiGame UI Script Architecture (UE5.5.4 + UnLua)"
+slug: "higame-ui-script"
+goal: >
+  深入掌握 HiGame 项目 UI 脚本层(Lua + UnLua + UMG/LGUI)的整体架构,
+  形成能让 AI 编程助手(Claude/CodeBuddy/Cursor)按规范产出新 UI 代码的知识库:
+  目录布局、基类继承链、生命周期、UI 栈与 Layer、UIInfo 配置、
+  MVVM 数据绑定、UI 事件原语、输入(键鼠/手柄/ESC)、C++ 与 Lua 边界、
+  UnLua 绑定方式、热更新、典型陷阱与真实代码模板。
+
+audience: >
+  HiGame 项目内的 AI 编程助手与新加入的客户端开发者。
+  默认读者已经懂基础 UE5 UMG、Lua、Blueprint 概念,
+  但对项目自研的 UIManager / lguiframework / 自研 UINavigation /
+  UIExtension / UnLua 三层目录(CommonScript/ClientScript/ServerScript) 不熟悉。
+
+key_questions:
+  - "UI 脚本目录结构是怎样的?业务 UI 应该放在 ui/widget/ 还是 ClientScript/ui/widget/?三层(Common/Client/Server)如何分隔 UI 代码?"
+  - "UI 启动链路:从 C++ UILogicSubSystem 到 Lua ui_logic_subsystem.lua 再到 UIManager:InitManager() 中间发生了什么?"
+  - "UIWindowBase 完整生命周期(Construct / OnCreate / UpdateParams / StartShow / OnShow / StartHide / OnHide / OnDestroy / StartBackShow / OnBackShow / RefreshPanel)各阶段触发条件是什么?"
+  - "UI 栈与 8 层 Layer 是如何工作的?FullScreen/IsModal/EscClose 怎样影响下层 UI 的可见性与输入?"
+  - "UIInfo DataTable 中所有可配字段的含义?新 UI 注册流程是什么?"
+  - "uiframework(2D UMG) 和 lguiframework(3D Actor) 的本质差别?它们是否共用 UIManager 与生命周期?"
+  - "MVVM 三件套:ViewModelBase / ViewmodelField / ViewModelBinder 各自接口?BindWayToWidget/ToVM/NotifyUI 三种绑定方式区别?ListField 如何驱动 ListView?"
+  - "UnLua 蓝图 ↔ Lua 路径如何对应?BindWidget 的子控件在 Lua 中如何访问?Construct vs OnConstruct 哪个推荐?Lua 类怎么声明?热更新原理是什么?"
+  - "UI 事件原语(UIWaitAnimation / UIWaitCloseOtherUI / UIWaitController / UIWaitEventContainer / UINotifier)各自的使用场景?"
+  - "UI 输入:Lua 怎样监听手柄按键和键鼠?UIInfo.EscClose 的 ESC 关闭机制?输入设备切换时如何获得通知?KeyAction/KeyIcon 是什么?Tip 与模态 UI 输入屏蔽差异?"
+  - "C++ 与 Lua 边界:哪些功能必须落 C++(理由)?Lua 应该完成什么?高频 BlueprintCallable 接口清单?"
+  - "AI 写一个新 UI 时,完整的步骤(WBP/DataTable/Lua/VM 注册/打开调用)如何串起来?有什么常见陷阱?"
+
+scope_boundary: >
+  专注 UI 脚本层 + 关键 C++ 边界。
+  不覆盖 UMG 控件本身的细节(Button/Image/Text 的属性表)、
+  不覆盖具体业务系统(Mail/Mission/Skill 等业务规则,只用作样例),
+  不覆盖编辑器扩展(Source/HiGameEditor)、
+  不覆盖 Wwise 音频细节、
+  不覆盖 DDS 跨服 Actor 同步。
+
+existing_raw_sources: []        # 本项目从零开始,以本地代码考古替代 web search
+mode: "new"
+research_method: "local-code-archaeology"   # 用代码考古代替 km-websearch 的 web fetch

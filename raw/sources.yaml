@@ -816,3 +816,174 @@ sources:
       - "Cold Start 15 题 + 日常精简 5 题 + 行为校准 mapping 表"
       - "场景化题 > 直问（Q6-Q9 四题核心）"
       - "min(Capacity, Tolerance) 双维度判定法"
+
+  - id: 48
+    title: "HiGame UI Lua 框架架构 — 入口/UIManager/uiframework vs lguiframework"
+    file: "higame-ui-framework-overview.md"
+    fetched: 2026-05-10
+    project: "higame-ui-script"
+    type: synthesis
+    urls:
+      - "p4://Content/Script/ui/uiframework/ui_manager.lua"
+      - "p4://Content/Script/ui/uiframework/ui_window_base.lua"
+      - "p4://Content/Script/ui/uiframework/ui_window_stack_manager.lua"
+      - "p4://Content/Script/ui/uiframework/ui_define.lua"
+      - "p4://Content/Script/ui/lguiframework/lgui_window_base.lua"
+      - "p4://Content/Script/ui/ui_logic_subsystem.lua"
+      - "p4://Content/Script/ui/ui_manager_launcher.lua"
+      - "p4://Content/Script/ui/main_ui.lua"
+      - "p4://Content/Script/ui/interactive_ui.lua"
+      - "p4://Content/Script/CODEBUDDY.md"
+    status: content-verified
+    covers_questions: [1, 2, 4, 6]
+    key_claims:
+      - "业务 UI 主目录是 ui/widget/, 不是 ClientScript/ui/widget/"
+      - "uiframework(UMG) 与 lguiframework(LGUI 3D) 共用同一个 UIManager, 通过 UIInfo.IsLGUI 区分"
+      - "8 层 UI 栈: TopLayer/AlertLayer/LoadingLayer/TipsLayer/GuideLayer/SystemLayer/SceneLayer/HUDLayer"
+      - "FullScreen=true 时自动隐藏下层所有打开界面"
+      - "main_ui.lua / interactive_ui.lua 已废弃 (作者注释证实)"
+      - "ui_logic_subsystem.lua 仍是 UI 启动入口"
+
+  - id: 49
+    title: "HiGame UIWindowBase 生命周期 + UIInfo 配置"
+    file: "higame-ui-window-lifecycle.md"
+    fetched: 2026-05-10
+    project: "higame-ui-script"
+    type: synthesis
+    urls:
+      - "p4://Content/Script/ui/uiframework/ui_window_base.lua"
+      - "p4://Content/Script/ui/uiframework/ui_define.lua"
+      - "p4://Content/Script/ui/uiframework/ui_widget_base.lua"
+      - "ue-asset:///Game/CP0032305_GH/Blueprints/DT/UIInfo"
+    status: content-verified
+    covers_questions: [3, 4, 5]
+    key_claims:
+      - "WindowState 枚举: Undefined(-1)/Collapsed(0)/Showing(1)/Showed(2)/Collapsing(3)"
+      - "完整生命周期: OnCreate / UpdateParams / StartShow / OnShow / StartHide / OnHide / OnDestroy / StartBackShow / OnBackShow / RefreshPanel"
+      - "DoOnCreate 等递归到 tbSubUserWidget, 子 UserWidget 也走完整生命周期"
+      - "UIInfo 字段: UIName/WidgetClassPath/UILayer/FullScreen/IsModal/EscClose/Mouse/IMC/DefaultOpen/ForceOpen/DontDestroy/Group/OpenAkEvent/CloseAkEvent/AudioStateType"
+      - "Collapsing 期间 BeginShow 会 ClearWaitEvent 防止状态错乱"
+
+  - id: 50
+    title: "HiGame MVVM(ViewModel + Field + Binder + WidgetProxy + Collection)"
+    file: "higame-ui-mvvm.md"
+    fetched: 2026-05-10
+    project: "higame-ui-script"
+    type: synthesis
+    urls:
+      - "p4://Content/Script/ui/uiframework/mvvm/viewmodel_base.lua"
+      - "p4://Content/Script/ui/uiframework/mvvm/viewmodel_field.lua"
+      - "p4://Content/Script/ui/uiframework/mvvm/viewmodel_binder.lua"
+      - "p4://Content/Script/ui/uiframework/mvvm/viewmodel_collection.lua"
+      - "p4://Content/Script/ui/uiframework/mvvm/ui_widget_proxy.lua"
+      - "p4://Content/Script/ui/viewmodel/vm_define.lua"
+      - "p4://Content/Script/ui/widget/Mail/ui_mainmail.lua"
+    status: content-verified
+    covers_questions: [7]
+    key_claims:
+      - "CreateVMField(InitValue) / CreateVMArrayField({}) 两类 Field"
+      - "BindWay 三种: BindWayToWidget(1, VM->UI) / BindWayToVM(2, UI->VM) / NotifyUI(3, 纯回调)"
+      - "Widget 端用 CreateUserWidgetField(setter) 或 WidgetProxys:CreateWidgetProxy(标准控件)"
+      - "ListField 支持 AddItem / RemoveItemIf 增量 OpCode"
+      - "VM 在 vm_define.lua UniqueVMInfo 表注册, 启动时 InitGlobalVM() 实例化"
+      - "跨 UI 数据共享 = ViewModelCollection:FindUniqueViewModel(name)"
+
+  - id: 51
+    title: "HiGame UnLua 绑定 + UI 事件原语 + UINotifier"
+    file: "higame-ui-unlua-and-events.md"
+    fetched: 2026-05-10
+    project: "higame-ui-script"
+    type: synthesis
+    urls:
+      - "p4://Config/DefaultUnLuaSettings.ini"
+      - "p4://Content/Script/CommonScript/UnLua/HotReload.lua"
+      - "p4://Content/Script/CommonScript/UnLua/InitEnv.lua"
+      - "p4://Content/Script/CommonScript/Class.lua"
+      - "p4://Content/Script/ui/uiframework/ui_event/ui_wait_animation.lua"
+      - "p4://Content/Script/ui/uiframework/ui_event/ui_wait_close_others.lua"
+      - "p4://Content/Script/ui/uiframework/ui_event/ui_wait_event_container.lua"
+      - "p4://Content/Script/ui/uiframework/ui_notifier.lua"
+    status: content-verified
+    covers_questions: [8, 9]
+    key_claims:
+      - "ModuleLocatorClass=LuaModuleLocator, WBP implements IUnLuaInterface 返回 GetClientModuleName"
+      - "BindWidget 子控件 -> Lua 同名 self.WidgetName 自动绑定, 无需声明"
+      - "UnLua.Class 与 _G.Class 完全等价 (Class.lua L381-382)"
+      - "Construct/OnConstruct 都对应 NativeConstruct, 新代码用 Construct"
+      - "热更原理: WatchScriptDirectory 监听 mtime, package.loaded=nil 重新 require, 逐函数替换+upvalue 保留"
+      - "UI 事件原语: WaitAnimation/WaitCloseOtherUI/WaitController/WaitEventContainer"
+      - "UINotifier 标准事件: UICreate/UIShow/UIAfterShow/UIHide/UIDestroy"
+
+  - id: 52
+    title: "HiGame UI 输入系统(键鼠/手柄/ESC/KeyAction/KeyIcon) + UI 激活栈"
+    file: "higame-ui-input-and-navigation.md"
+    fetched: 2026-05-10
+    project: "higame-ui-script"
+    type: synthesis
+    urls:
+      - "p4://Source/HiGame/Public/UINavigation/UINavigationConfig.h"
+      - "p4://Source/HiGame/Public/UINavigation/Input/"
+      - "p4://Source/HiGame/Public/UI/Gamepad/HiUI_GamepadMenu_Base.h"
+      - "p4://Source/HiGame/Public/UI/HiInputMasterSubsystem.h"
+      - "p4://Source/HiGame/Public/UI/IngameLayerManagerWidget.h"
+      - "p4://Source/HiGame/Public/UI/HiInputKeyActionWidget.h"
+      - "p4://Source/HiGame/Public/UI/HiKeyIconWidget.h"
+      - "p4://Content/Script/ui/uiframework/input_define.lua"
+    status: content-verified
+    covers_questions: [10]
+    key_claims:
+      - "Lua 通过 Action 名监听: UIManager:RegisterActionDelegate(self, fn, ActionName, EventType)"
+      - "ESC 走 UIInfo.EscClose=true, 不需手写监听"
+      - "OnLayeredUIActivated/Deactivated 维护 ActivatedUIArray, KeyAction 仅对栈顶生效"
+      - "OnInputMethodChanged 多播订阅设备切换, 用于切换提示图标"
+      - "Handler 链: KeyAction -> UINavigation -> Block -> KeyIcon -> Cooldown"
+      - "EHiInputMasterUIHandleKeyPolicy: Ignore/Accept/Reject/LowLevel"
+      - "Tip 不入栈, 模态 UI 入栈+Reject"
+
+  - id: 53
+    title: "HiGame UI C++ 类层次 + Lua/C++ 边界 + BlueprintCallable 接口清单"
+    file: "higame-ui-cpp-boundary.md"
+    fetched: 2026-05-10
+    project: "higame-ui-script"
+    type: synthesis
+    urls:
+      - "p4://Source/HiGame/Public/UI/UILogicSubSystem.h"
+      - "p4://Source/HiGame/Public/UI/IngameLayerManagerWidget.h"
+      - "p4://Source/HiGame/Public/UI/HiUserWidget.h"
+      - "p4://Source/HiGame/Public/UI/HiActivableUserWidget.h"
+      - "p4://Source/HiGame/Public/UI/HiActivableLayeredWidget.h"
+      - "p4://Source/HiGame/Public/UI/UIBlueprintFunctionLibrary.h"
+      - "p4://Source/HiGame/Public/UI/HiWidgetLayoutLibrary.h"
+      - "p4://Source/HiGame/Public/UI/UIExtensions/HiUIExtensionSubsystem.h"
+      - "p4://Source/HiGame/Public/UI/Cursor/HiUI_AssistMaster_Cursor_Base.h"
+    status: content-verified
+    covers_questions: [11]
+    key_claims:
+      - "UILogicSubSystem 是 UWorldSubsystem(Abstract+Blueprintable), 所有逻辑下沉到 Lua"
+      - "UHiUserWidget 是所有业务 Widget 基类, 提供 K2_* 系列 BlueprintCallable"
+      - "必须 C++: Slate InputPreProcessor / FNavigationConfig / 高频 Tick / RT 操作 / 3D 椭圆夹持"
+      - "UIExtensions 是自研, 非 CommonUI, DataTable 配置按平台拆分"
+      - "高频 BlueprintCallable: K2_SetWidgetText/K2_SetImageFromSoftObject/PlayAnimationAndWaitForFinished/SetTimerOnce/AsyncLoadObject"
+
+  - id: 54
+    title: "HiGame UI 真实代码模板(弹窗/全屏面板/ListItem/VM) + 注册流程"
+    file: "higame-ui-cookbook-and-pitfalls.md"
+    fetched: 2026-05-10
+    project: "higame-ui-script"
+    type: synthesis
+    urls:
+      - "p4://Content/Script/ui/widget/Login/WBP_Login_Popup_Device.lua"
+      - "p4://Content/Script/ui/widget/Mail/ui_mainmail.lua"
+      - "p4://Content/Script/ui/widget/Mail/ui_mailitem.lua"
+      - "p4://Content/Script/ui/viewmodel/vm_define.lua"
+      - "p4://Content/Script/ClientScript/actors/Abyss/BPA_AbyssEntry.lua"
+      - "p4://Content/Script/ClientScript/ui/widget/TradingPost/WBP_TradingPost_Main.lua"
+      - "p4://Content/Script/common/item/ItemJumpToAccess.lua"
+    status: content-verified
+    covers_questions: [12]
+    key_claims:
+      - "新 UI 5 步: 决定 2D/3D -> WBP 实现 IUnLuaInterface -> DataTable 注册 UIInfo -> Lua 类 -> (可选)注册 VM -> OpenUI 调用"
+      - "OpenUI 签名: UIInfo, CallBack, Sync, ...; OpenUIByName 签名: UIName, CallBack, Sync, ..."
+      - "Construct 中所有 :Add 在 Destruct 中必须 :Remove (热更/GC 防泄漏)"
+      - "UI 不能写在 ServerScript (服务端不实例化 UI)"
+      - "11 类常见陷阱表"

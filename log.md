@@ -20,3 +20,9 @@
 ## [2026-04-28] websearch | ai-stock-picker-hkcn | Research complete (+14 raw sources id 34-47, 8/8 questions complete)
 
 ## [2026-04-28] wiki | ai-stock-picker-hkcn | 12 pages created
+
+## [2026-05-10] explore | higame-ui-script | Topic defined (本地代码考古替代 websearch)
+
+## [2026-05-10] websearch (local-archaeology) | higame-ui-script | Research complete — 7 raw sources (id 48-54), 12/12 questions covered
+
+## [2026-05-10] wiki | higame-ui-script | 12 pages created
