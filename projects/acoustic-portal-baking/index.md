@@ -32,33 +32,33 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    P1["1. 核心洞察<br/>为什么不用 Portal"]
-    P2["2. 完整流水线<br/>Pipeline 全景"]
+    P1["① 核心洞察<br/>为什么不用 Portal"]
+    P2["② 完整流水线<br/>Pipeline 全景"]
 
     P1 --> P2
 
     subgraph DETECT["Portal 自动检测与放置（CORE）"]
-        P3["3. 探针自动布置"]
-        P4["4. 可见性图构建"]
-        P5["5. Dijkstra 全对最短路"]
-        P6["6. SoundPath 存储"]
+        P3["③ 探针自动布置"]
+        P4["④ 可见性图构建"]
+        P5["⑤ Dijkstra 全对最短路"]
+        P6["⑥ SoundPath 存储"]
     end
 
     subgraph DIFFRACT["绕射（CORE）"]
-        P7["7. UTD 绕射理论"]
-        P8["8. Steam Audio 的偏折角-UTD"]
+        P7["⑦ UTD 绕射理论"]
+        P8["⑧ Steam Audio 的偏折角-UTD"]
     end
 
     subgraph RUNTIME["运行时"]
-        P9["9. 运行时查询 + DSP"]
+        P9["⑨ 运行时查询 + DSP"]
     end
 
     subgraph OPTIONAL["辅助 / 扩展"]
-        P10["10. 显式 Portal 检测方法"]
-        P11["11. Project Acoustics 波动式对比"]
+        P10["⑩ 显式 Portal 检测方法"]
+        P11["⑪ Project Acoustics 波动式对比"]
     end
 
-    P12["12. 方法对比与原型建议"]
+    P12["⑫ 方法对比与原型建议"]
 
     P2 --> P3
     P2 --> P7

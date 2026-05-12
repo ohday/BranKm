@@ -987,3 +987,142 @@ sources:
       - "Construct 中所有 :Add 在 Destruct 中必须 :Remove (热更/GC 防泄漏)"
       - "UI 不能写在 ServerScript (服务端不实例化 UI)"
       - "11 类常见陷阱表"
+  - id: 55
+    title: "HiGame InteractSystem C++ Module"
+    file: "higame-mechanism-interactsystem.md"
+    fetched: 2026-05-11
+    project: "higame-mechanism"
+    type: local-archaeology
+    urls:
+      - "p4://Source/HiGame/Public/InteractSystem/InteractSystem.h"
+      - "p4://Source/HiGame/Public/InteractSystem/InteractItemComponent.h"
+      - "p4://Source/HiGame/Public/InteractSystem/InteractManagerComponent.h"
+      - "p4://Source/HiGame/Public/InteractSystem/InteractRangeComponent.h"
+      - "p4://Source/HiGame/Public/InteractSystem/InteractRangeInterface.h"
+      - "p4://Source/HiGame/Public/InteractSystem/InteractCharacterComponent.h"
+      - "p4://Source/HiGame/Public/InteractSystem/InteractWidget.h"
+      - "p4://Source/HiGame/Public/InteractSystem/InteractWidgetUpdater.h"
+      - "p4://Source/HiGame/Public/InteractSystem/CustomInteractExecutor.h"
+      - "p4://Source/HiGame/Public/InteractSystem/UInteractExecutorInterface.h"
+    status: content-verified
+    covers_questions: [Q1, Q2, Q3, Q4, Q5]
+    key_claims:
+      - "EInteractItemState 4 态: None/Prompt/Focus/Interacting; 切换入口唯一 InternalSetInteractState"
+      - "EInteractAction 7 值实际仅 IA_None/IA_SendGameplayEventWithPayload/IA_CustomExecutor/IA_InterfaceImplement 实现"
+      - "TRACE_CHANNEL_INTERACT_FOCUS_TEST 宏定义但全模块零引用; 实际靠 Capsule overlap"
+      - "InteractRange collision profile DefaultEngine.ini 中未定义, 隐式依赖"
+      - "Manager 仅本地客户端工作 (IsLocalController 守卫)"
+      - "UInteractCharacterComponent 当前是死的 (UpdateFocusRange 全注释)"
+  - id: 56
+    title: "HiGame Interactable 基类三件套与用例集"
+    file: "higame-mechanism-interactable-base.md"
+    fetched: 2026-05-11
+    project: "higame-mechanism"
+    type: local-archaeology
+    urls:
+      - "p4://Content/Script/actors/common/interactable/base/base_item.lua"
+      - "p4://Content/Script/actors/common/interactable/base/interacted_item.lua"
+      - "p4://Content/Script/actors/common/interactable/base/placeable_item.lua"
+      - "p4://Content/Script/actors/common/interactable/base/base_ghost.lua"
+      - "p4://Content/Script/actors/common/interactable/base/ui_interact.lua"
+    status: content-verified
+    covers_questions: [Q11, Q12, Q13]
+    key_claims:
+      - "三件套继承链: BaseItem -> InteractedItem -> PlaceableItem; BaseGhost 平行不在 BaseItem 链路"
+      - "EntityPropertyMessageName 是 DDS Entity 框架路由属性同步消息的标识"
+      - "QuerySystem 仅 Client 订阅 vs Box.OnComponentBeginOverlap 双端"
+      - "命名约定: BP_xxx 1:1 蓝图; BPA_xxx 复合 Actor; base_xxx 抽象基类"
+      - "RO 子目录约定: 每个跨端同步状态的物件对应 BP_xxx_RO; 继承链与 Actor 平行"
+      - "用例覆盖 Door/Elevator/Chest/Bottle/Note/Album/Telephone/PumpkinGame/Gravity/FaithHourglass/DreamRebuild"
+  - id: 57
+    title: "HiGame Puzzle 5 标准范式"
+    file: "higame-mechanism-puzzle-pattern.md"
+    fetched: 2026-05-11
+    project: "higame-mechanism"
+    type: local-archaeology
+    urls:
+      - "p4://Content/Script/CommonScript/actors/Puzzle/{DancingSofa,DouDing,GhostMechanism,HeadEye,SurveillanceBird}/"
+      - "p4://Content/Script/ServerScript/actors/Puzzle/GhostMechanism/StateTree/STTask_*.lua"
+      - "p4://Content/Script/CommonScript/actors/Puzzle/base/BPA_PuzzleBase.lua"
+    status: content-verified
+    covers_questions: [Q6, Q7, Q8, Q9]
+    key_claims:
+      - "三层目录: ServerScript/ClientScript 都 extends CommonScript 同名类"
+      - "Common 层职责: 字段集中声明 + Overlap 绑定 + 状态路由 + NSM/Spline 工具"
+      - "CharacterMovement 平滑动力学: MaxAcceleration=600, BrakingDecelerationWalking=400"
+      - "D4 fallback: T+0.5s 兜底 ChangeStatue_Server(Appear)"
+      - "Save 归一化: Complete->Destroy 入档前直改字段不走 Call_StatusFlowRaw"
+      - "Load 重广播: bForce=true 绕过 SetCurrentState 同值去重 + Multicast"
+      - "GhostMechanism + HeadEye 用 StateTree 做 AI 子状态"
+  - id: 58
+    title: "HiGame MissionPuzzle Subsystem 全链路"
+    file: "higame-mechanism-missionpuzzle.md"
+    fetched: 2026-05-11
+    project: "higame-mechanism"
+    type: local-archaeology
+    urls:
+      - "p4://Plugins/HiMissionPuzzle/Source/HiMissionPuzzle/Public/HiMissionPuzzleSubsystem.h"
+      - "p4://Plugins/HiMissionPuzzle/Source/HiMissionPuzzle/Public/HiMissionPuzzleComponent.h"
+      - "p4://Plugins/HiMissionPuzzle/Source/HiMissionPuzzle/Public/HiMissionPuzzleTypes.h"
+      - "p4://Content/Script/ServerScript/mission/mission_node/mission_node_execute_puzzle.lua"
+      - "p4://Content/Script/ServerScript/mission/mission_node/mission_node_end_puzzle.lua"
+      - "p4://Content/Script/ServerScript/mission/mission_puzzle/mission_pathchasing_puzzle.lua"
+      - "p4://Content/Script/ClientScript/mission/puzzle/mission_puzzle_player_component.lua"
+      - "p4://Content/Script/mission/puzzle/mission_puzzle_utils.lua"
+    status: content-verified
+    covers_questions: [Q14]
+    key_claims:
+      - "UHiMissionPuzzleSubsystem 是 UWorldSubsystem (NOT GameInstanceSubsystem)"
+      - "UHiMissionPuzzleComponent 挂在 PlayerState"
+      - "FHiPuzzleSnapshot.operator== 故意排除 RemainingTime"
+      - "EntryID FString FGuid + PuzzleID int32 二元结构"
+      - "Reconnect 双通道: Replication 增量 + GetLocalPlayerRunningSnapshots 冷启动"
+      - "带外 reliable RPC Client_NotifyPuzzleEnded 解决 bAutoUnregister 时中间帧被吞"
+      - "文件名陷阱: ServerScript/mission/puzzle/mission_puzzle_subsystem.lua 实为 MissionTrackingManager_S"
+  - id: 59
+    title: "HiGame Trap 战斗陷阱与 GAS 集成"
+    file: "higame-mechanism-trap-gas.md"
+    fetched: 2026-05-11
+    project: "higame-mechanism"
+    type: local-archaeology
+    urls:
+      - "p4://Content/Script/actors/common/trap/TrapActorBalloonSmallSpawnShowActor.lua"
+      - "p4://Content/Script/CommonScript/actors/interactable/SwapHead/BP_SwapHeadBattleTrap.lua"
+      - "p4://Content/Script/CommonScript/actors/interactable/SwapHead/Utils/POLifecycleManager.lua"
+      - "p4://Content/Script/CommonScript/actors/interactable/SwapHead/Utils/SwapHeadUtils.lua"
+      - "p4://Content/Script/actors/common/interactable/FenNuBao/BPA_GdObject_Prop_Fennubao.lua"
+      - "p4://Content/Script/CommonScript/actors/interactable/Inmate/BP_InmateItemBase.lua"
+      - "p4://Content/Script/actors/common/interactable/PumpkinGame/pumpkin_game_manager.lua"
+      - "p4://Content/Script/CommonScript/actors/components/buff_component.lua"
+      - "p4://Content/Script/common/utils/gas_utils.lua"
+    status: content-verified
+    covers_questions: [Q15]
+    key_claims:
+      - "trap 三条血脉: actors/common/trap/ 物理触发型; SwapHead 采集物型; FenNuBao/Pumpkin/Inmate 特殊群"
+      - "GAS 三种触发方式: AddBuffByID 配置驱动 / MakeOutgoingSpec 携带数值 / SendMessage HandleHitEvent 击飞"
+      - "EGASAbilityInputID 仅 8 项玩家输入, trap 不直接走 InputID 路径"
+      - "PO LifecycleManager: 事件驱动 + 5s 超时强制销毁双保险"
+      - "FenNuBao 是最干净的 GE 直送范式"
+  - id: 60
+    title: "HiGame Status / RO / Database 三横切"
+    file: "higame-mechanism-status-ro-database.md"
+    fetched: 2026-05-11
+    project: "higame-mechanism"
+    type: local-archaeology
+    urls:
+      - "p4://Plugins/LogicalChains/Source/LogicalChains/Public/Components/LogicalStateComponent.h"
+      - "p4://Plugins/LogicalChains/Source/LogicalChains/Public/Components/LogicalSignalGenerator.h"
+      - "p4://Plugins/LogicalChains/Source/LogicalChains/Public/Components/LogicalSignalReceiver.h"
+      - "p4://Content/Script/actors/common/interactable/base/base_item.lua"
+      - "p4://Content/Script/actors/common/interactable/RO/"
+      - "p4://Content/Script/ServerScript/actors/Puzzle/GhostMechanism/BPA_GhostMechanism.lua"
+    status: content-verified
+    covers_questions: [Q7, Q8, Q9-cross]
+    key_claims:
+      - "bNewStatusFW 是 BP_BaseItem 蓝图 boolean 字段, UCS 调 SetAdvancedLogicalChains"
+      - "ItemStatusComponent 是蓝图组件, 不是 C++ 类"
+      - "LogicalSignalGenerator/Receiver 是独立第三方插件 Plugins/LogicalChains/"
+      - "bAutoRegister 绝不能关 (会破坏 OnRegister 链, ASC 未初始化崩溃)"
+      - "RO 是 UObject (URO_*) 不是 AActor; 通过 MutableActorSubsystem.GetRO 注册"
+      - "Multicast 重广播 + Destroy 直销毁 解决 SaveGame 反序列化不标脏"
+      - "D4 fallback 含义代码未解释, 推测是该机关防御等级或 Defense #4 内部编号"

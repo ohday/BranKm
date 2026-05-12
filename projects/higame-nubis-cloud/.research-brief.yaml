@@ -1,0 +1,428 @@
+topic: "HiGame NubisCloud — Volumetric Cloud Pipeline (UE5.5.4 + Engine fork)"
+slug: "higame-nubis-cloud"
+created: 2026-05-11
+revised: 2026-05-11
+
+goal: >
+  对 HiGame 项目里 NubisCloud 体积云体系做源码级解剖，产出能让 AI 编程助手
+  (Claude / CodeBuddy / Cursor) 与图形/渲染程序员完成以下任务的知识库：
+    1. 在 Engine/Source/Runtime/Renderer/Private/NubisVolumes 与
+       Engine/Shaders/Private/NubisVolumes 中精确定位需要修改的 Pass，
+       理解每个 RDG Pass 的输入/输出/依赖关系；
+    2. 在 Plugins/NubisCustom (NubisCustom + NubisCustom2 + NubisEditorTools
+       + SDFCompressEditor 四模块) 中正确扩展 Actor / Component / Subsystem，
+       而不破坏 Clipmap 调度；
+    3. 走通 NubisTools / lop_openvdb_higame / OmniversePythonActor 的烘焙
+       流程：从 Houdini OpenVDB ➜ Project Content ➜ NubisVDBDataAsset
+       ➜ NubisClipmapSubsystem 上传 GPU ➜ Sparse Voxel 采样；
+    4. 给关卡放置 NubisQuickCloud / NubisHiCloud2Actor 时，理解 Zone /
+       Clipmap / VDB / Material 之间的耦合，并能查到每个参数最终影响哪个
+       Shader 常量。
+
+  研究方法：本地代码考古 (替代 km-websearch 的 web fetch)。所有 API 名 /
+  字段名 / 路径 / 宏开关均经实际代码验证；引擎魔改部分以 `HiGame Begin /
+  HiGame End` 标记为线索。
+
+audience: >
+  HiGame 项目内的图形 / 渲染 / TA / AI 编程助手。
+  默认读者已经懂 UE5 RDG (RenderGraph)、PrimitiveSceneProxy、Volumetric
+  Cloud 基础，了解 Sparse Voxel / Clipmap / Ray Marching 的概念，但对
+  HiGame 引擎 fork 中 NubisVolumes 的具体改造、对 Plugins/NubisCustom 与
+  Engine/NubisVolumes 之间通过 INubisVolumeInterface 的解耦方式、对 NubisTools
+  烘焙链路、对 LV_FGD_01 / LV_KTD / LV_WD_FAHN / LV_ZC_YLD 等关卡里
+  NubisVDBCache 的物理产出形态不熟悉。
+
+depth_target: "source-code-level"
+# 必须能回答 "RenderNubisClipmapLevel 第 N 个 Pass 的 SRV/UAV 是什么"、
+# "LightingCacheReseed 为什么要 EMA、Scroll UV Offset 是怎么对齐的"、
+# "Bilateral Upscale 的 Near Dominance Blend 公式"、
+# "Sparse Voxel Per-Tile Culling 如何与 Indirection Grid 协作"。
+# 不需要复刻整个引擎，但需要能下手改动单个 Pass / 单个 Shader Permutation。
+
+connectivity_level: "full-pipeline"
+# 覆盖 数据端 (DataAsset / Actor / Subsystem)
+#   ↔ Game Thread (PrimitiveSceneProxy 创建 / 注册)
+#   ↔ Render Thread (Clipmap 调度 / GPU Resource 上传)
+#   ↔ RDG Pass (Voxelize / RayMarch / Composite / Reproject / Apply)
+#   ↔ Shader (.usf / .ush 共 14 个文件)
+#   ↔ 烘焙 (Houdini OpenVDB ➜ Texture Asset ➜ NubisVDBDataAsset)
+
+geometry_assumptions: >
+  HiGame 是开放世界 UE5.5.4 工程，引擎已合并 5.6 / 5.7 部分功能 (Metahuman /
+  FastGeometry / NaniteFoliage / UBA)。NubisCloud 在 Engine 端是
+  HIGAME_ENABLE_NUBIS 宏控制的引擎魔改，在项目端是 NubisCustom 插件 +
+  Content/Material/Volumetric/Nubis + Content/Maps/<level>/NubisVDBCache 资产。
+
+deployment_target: "ue5-engine-fork"
+# 修改对象就是 HiGame 的 UE5.5.4 fork (Engine/) 与 HiGame.uproject 的 plugin。
+# Linux 构建时 NubisCustom 全模块 PlatformDenyList=[Linux]，DS Server 不参与。
+
+acoustic_model: "n/a"
+# 这是 GPU 渲染主题，复用 acoustic-portal-baking 模板的字段语义可，但本字段不适用。
+
+input_contract:
+  given:
+    - "HiGame UE5.5.4 fork 工作区已 P4 同步"
+    - "HIGAME_ENABLE_NUBIS 宏在 HiGameClient / HiGameEditor target 启用"
+    - "NubisCustom 插件已在 HiGame.uproject 中 Enabled"
+    - "Houdini Engine 插件可用，lop_openvdb_higame.uasset 可加载"
+    - "关卡 Maps/LV_FGD_01 / LV_KTD / LV_WD_FAHN / LV_ZC_YLD / LV_ZC_YLD_test 可作为 reference"
+  not_in_scope:
+    - "复刻 NubisCloud 到非 HiGame 的 UE 工程 (假设 fork 已存在)"
+    - "Houdini 内部建模 / 体素化算法本身 (上游黑盒)"
+    - "Wwise / 音频 / DDS Actor 同步 (与体积云无关)"
+    - "通用 UE5 VolumetricCloud (Sky Atmosphere) — 仅作对比，不深挖"
+
+key_questions:
+
+  # ============================================================
+  # FOCUS A: 引擎端 — Clipmap 调度与 RDG Pass (CORE)
+  # ============================================================
+
+  - id: A1
+    priority: must
+    group: "engine-arch"
+    question: >
+      [总览] HiGame 在 UE5.5.4 引擎里魔改的 NubisVolumes 子系统由哪些文件
+      构成？分别落在 Engine/Source/Runtime/Renderer/Private/NubisVolumes/
+      (4 个 cpp/h) 与 Engine/Shaders/Private/NubisVolumes/ (14 个 usf/ush)。
+      与 INubisVolumeInterface (Engine/Source/Runtime/Engine/Public/
+      NubisVolumeInterface.h) 的关系是什么？HIGAME_ENABLE_NUBIS 宏在哪些
+      Target.cs / Build.cs 中开启？这是整个 wiki 的入口图。
+
+  - id: A2
+    priority: must
+    group: "engine-arch"
+    question: >
+      [Game Thread / Render Thread 边界] ANubisHiCloud2Actor / ANubisZone2Actor
+      在 Game Thread 创建后，PrimitiveSceneProxy 如何在 Render Thread 注册
+      到 FScene？INubisVolumeInterface 的方法在哪一线程被调用？
+      FNubisClipmapLevelRenderConfig 结构体何时由数据端 (NubisClipmapManager)
+      填充、何时被渲染器消费？画一张完整的 GT↔RT 时序图。
+
+  - id: A3
+    priority: must
+    group: "engine-arch"
+    question: >
+      [Clipmap 多级调度] NubisDefaults 给出 MipCount=6, BaseVoxelSize=1m,
+      TextureSize=512x512x128, SectorSize=256x256x64。
+      RenderNubisClipmapLevel(...) 的两趟调用（bLightingCacheOnly=true 与
+      =false）分别做什么？6 个 Mip Level 之间是串行还是并行？Mip Ring
+      Crossover (NubisVolumes::GetMipRingCrossoverCm) 如何决定 Near/Far
+      管线分工？为什么要用 Sector 滚动 (LightingCacheScrollUVOffset) 而不是
+      重建 LightingCache？
+
+  - id: A4
+    priority: must
+    group: "engine-rdg"
+    question: >
+      [RDG Pass 拆解 — Live Shading Pipeline] NubisVolumesLiveShadingPipeline.cpp
+      (~2700 行) 的入口是什么？它顺序构造的 RDG Pass 列表（含 Pass Name、
+      输入 SRV、输出 UAV、依赖关系）是什么？至少需要列出：
+        (a) Sparse Voxel 构建 / 刷新 (Bottom Level Grid + Indirection Grid)
+        (b) Per-Tile Culling
+        (c) LightingCacheReseed (EMA 重投影)
+        (d) Near Scattering / Far Dither Scattering
+        (e) Ray Marching Near / Far
+        (f) Reconstruct
+        (g) Bilateral Upscale (含 Soft Near Dominance Blend)
+        (h) SceneComposite (apply 到 Translucent Buffer)
+      每个 Pass 在哪个 .usf 文件、Permutation Domain 是什么。
+
+  - id: A5
+    priority: must
+    group: "engine-rdg"
+    question: >
+      [Sparse Voxel 管线] UseSparseVoxelPipeline / UseSparseVoxelPerTileCulling /
+      EnableIndirectionGrid 的含义？BottomLevelGridResolution 与
+      IndirectionGridResolution 的关系？SparseVoxelMipBias 怎么用？
+      RefineSparseVoxels 触发条件？为什么要分 Bottom Level + Indirection
+      两级？这是 Nubis 与 UE 默认 VolumetricCloud 的关键差异之一。
+
+  - id: A6
+    priority: must
+    group: "engine-rdg"
+    question: >
+      [LightingCache + Transmittance Volume] NubisLightingCacheParameters
+      结构体的 LightingCacheTexture / LightingCacheVoxelBias /
+      LightingCacheScrollUVOffset 各表示什么？
+      NubisVolumesTransmittanceVolumeUtils.ush 与 NubisVolumesLightingUtils.ush
+      内的核心函数 (Sample / ScrollFrac / EMA 公式) 长什么样？
+      UseLightingCacheForInscattering vs UseLightingCacheForTransmittance
+      何时分别开启？
+
+  - id: A7
+    priority: must
+    group: "engine-rdg"
+    question: >
+      [Hardware Ray Tracing 集成] UseHardwareRayTracing 开启时，FRayTracingScene
+      如何参与 NubisVolumes 阴影 / 间接光？哪些 Pass 会切换到 RT 路径？
+      在 PS5 / Win64 上是否一致？没有 RT 时的 fallback 是什么？
+
+  - id: A8
+    priority: should
+    group: "engine-rdg"
+    question: >
+      [Temporal Reproject + Bilateral Upscale] FNubisRenderTargetViewStateData
+      (NubisRenderTargetViewStateData.h, 421 行) 在 ViewState 中保存了哪些
+      历史纹理？Reconstruct.usf 读哪些上一帧资源？Bilateral Upscale 的
+      Near Dominance Blend (StartAlpha / EndAlpha) 数学公式是什么？
+      Jitter (NubisVolumes::ShouldJitter) 与 Reproject 的耦合关系。
+
+  # ============================================================
+  # FOCUS B: 项目插件 NubisCustom (CORE)
+  # ============================================================
+
+  - id: B1
+    priority: must
+    group: "plugin-arch"
+    question: >
+      [NubisCustom 插件结构] 插件由 4 个模块组成 (NubisCustom Runtime,
+      NubisCustom2 Runtime, NubisEditorTools Editor, SDFCompressEditor
+      Editor)，全部 PlatformDenyList=[Linux]、LoadingPhase=PostConfigInit。
+      模块间依赖是什么？NubisCustom 与 NubisCustom2 的差别是什么 (前者老
+      Actor 路径，后者基于 NubisClipmap 的新路径)？SDFCompressEditor 用来
+      做什么？
+
+  - id: B2
+    priority: must
+    group: "plugin-arch"
+    question: >
+      [NubisCustom 主模块] NubisCustomSubsystem / NubisHiCloudActor /
+      NubisZoneActor / NubisGenSDFComponent / NubisDataAsset 各自的职责？
+      NubisGenSDFComponent 如何在编辑器/运行时生成 SDF 提供给 Material？
+      老路径下，云体的世界数据流是怎么从 Actor 走到 Engine RenderProxy 的？
+
+  - id: B3
+    priority: must
+    group: "plugin-arch"
+    question: >
+      [NubisCustom2 主模块] NubisClipmap / NubisClipmapSubsystem /
+      NubisClipmapDataAsset / NubisHiCloud2Actor / NubisZone2Actor /
+      NubisVDBDataAsset 各自的职责？
+      NubisClipmapSubsystem (UWorldSubsystem 还是 GameInstanceSubsystem?)
+      如何管理 6 级 Clipmap？数据端如何填 FNubisClipmapLevelRenderConfig
+      并通过 INubisVolumeInterface 推给渲染器？这是全 wiki 的"承上启下"页。
+
+  - id: B4
+    priority: must
+    group: "plugin-arch"
+    question: >
+      [NubisVDBDataAsset 与 GPU 资源] NubisVDBDataAsset 持有什么 (UVolumeTexture /
+      Texture3D / 压缩格式)？运行时何时把它上传到 GPU？被哪个 Shader 资源
+      绑定 (RDG_TEXTURE 名)？多个 Zone 在同一 Clipmap Level 时如何拼接？
+
+  - id: B5
+    priority: should
+    group: "plugin-arch"
+    question: >
+      [Editor Tools] NubisEditorTools 的 SNubisToolsPanel /
+      NubisManagerCommands / NubisToolsCommands / NubisActorFilter /
+      NubisZoneEditorSubsystem / BP_NubisToolLibrary 各自做什么？
+      关卡 TA 在 Editor 里的标准操作流（创建 Zone ➜ 关联 VDB ➜ 调试预览
+      ➜ 烘焙）是什么？
+
+  # ============================================================
+  # FOCUS C: 烘焙流程 (CORE)
+  # ============================================================
+
+  - id: C1
+    priority: must
+    group: "bake"
+    question: >
+      [上游：Houdini ➜ OpenVDB] Content/EditorOnly/NubisTools/ 下的
+      lop_openvdb_higame.uasset 与 BP_NubisTOmniversePythonActor 是什么？
+      Houdini Engine 如何在 UE 内工作？资产作者从 Houdini 输出 .vdb 文件时
+      约定的密度 / 速度 / 温度 channel 命名是什么？
+
+  - id: C2
+    priority: must
+    group: "bake"
+    question: >
+      [中游：VDB ➜ NubisVDBCache 资产] Content/Maps/<level>/NubisVDBCache/
+      下面的资产长什么样 (UVolumeTexture / 压缩格式 / Mip 数)？SDFCompressEditor
+      是这一步的工具吗？压缩流程的输入参数 / 输出布局 / 失败时的诊断手段？
+
+  - id: C3
+    priority: must
+    group: "bake"
+    question: >
+      [下游：QuickCloud ➜ 关卡放置] Content/Maps/<level>/NubisQuickCloud/
+      与 Content/WeatherSystem/Maps/NubisQuickCloud 的差别？QuickCloud 是
+      预设关卡还是 Actor 模板？关卡里的 NubisHiCloud2Actor / NubisZone2Actor
+      如何引用 NubisVDBCache 资产？
+
+  - id: C4
+    priority: must
+    group: "bake"
+    question: >
+      [SDF 烘焙旁支] NubisGenSDFComponent 自己的 SDF 是运行时生成还是
+      离线烘焙？SDFCompressEditor 模块只压缩 NubisVDB，还是也压缩 SDF？
+      它们与 Engine/Source/Runtime/Engine/Private/HiGame/SDFCompressUtils
+      (若存在) 的关系是什么？
+
+  - id: C5
+    priority: should
+    group: "bake"
+    question: >
+      [完整烘焙 Cookbook] 从零给一张新地图 LV_NEW 加体积云的完整步骤：
+        1) Houdini 出 .vdb；
+        2) 通过 lop_openvdb_higame 导入；
+        3) 走 SDFCompressEditor 压缩；
+        4) 生成 NubisVDBDataAsset；
+        5) 关卡里加 ANubisHiCloud2Actor + ANubisZone2Actor；
+        6) 配 NubisClipmapDataAsset；
+        7) Editor 预览；
+        8) Cook / 打包验证。
+      每一步的常见报错 / 验证手段。
+
+  # ============================================================
+  # FOCUS D: 材质与 Volumetric (SHOULD)
+  # ============================================================
+
+  - id: D1
+    priority: should
+    group: "material"
+    question: >
+      [材质函数库] Content/Material/MaterialFunction/Nubis/ 下的 MF 与
+      Content/Material/Volumetric/Nubis/ 的差别？哪些 MF 是被 NubisVolumes
+      shader 直接引用的，哪些只是给 Niagara / 后处理用的？
+
+  - id: D2
+    priority: should
+    group: "material"
+    question: >
+      [TestNubisLight / TestNubisPlane 样例] Content/Developers/wenxiangzuo/
+      下的 TestNubisLight、TestNubisPlane、CustomNubisVolume 是开发者
+      调试样例，分别演示了什么场景？关卡 TA 想自己测试 Lighting / 投影时
+      可以借用哪一份？
+
+  # ============================================================
+  # FOCUS E: 调试 / 性能 / 平台 (SHOULD)
+  # ============================================================
+
+  - id: E1
+    priority: should
+    group: "debug"
+    question: >
+      [Visualize 与 Debug] NubisVolumesVisualize.usf 的可视化模式有哪些
+      (LightingCache / Transmittance / SparseVoxel / RayMarch step count)？
+      ShouldVisualizeNubis 由什么 console 命令开启？常用 cvar 与对应的
+      NubisVolumes:: getter 函数清单。
+
+  - id: E2
+    priority: should
+    group: "debug"
+    question: >
+      [性能预算与平台差异] Win64 / PS5 / Android 上 NubisVolumes 的开关
+      策略 (DoesPlatformSupportNubisVolumes 实现)？典型预算下 GPU 时间
+      在 Near vs Far 各占多少？降级路径 (关 Sparse Voxel / 关 LightingCache /
+      下采样) 的优先级？
+
+  - id: E3
+    priority: stretch
+    group: "debug"
+    question: >
+      [与 UE 默认 VolumetricCloud 的对比] 同时启用是否会冲突？为什么 HiGame
+      选择 Nubis 而不直接用 UE 自带的？关键差异在哪 (Sparse Voxel /
+      Clipmap / VDB 烘焙 / LightingCache EMA)。
+
+scope_boundary: >
+  IN scope:
+    - Engine/Source/Runtime/Renderer/Private/NubisVolumes/ (CPU 调度与 RDG Pass 构图)
+    - Engine/Shaders/Private/NubisVolumes/ (14 个 usf/ush)
+    - Engine/Source/Runtime/Engine/Public/NubisVolumeInterface.h (跨模块 API)
+    - HIGAME_ENABLE_NUBIS 宏的所有 HiGame Begin/End 标记
+    - Projects/HiGame/Plugins/NubisCustom (4 模块)
+    - Content/Material/MaterialFunction/Nubis 与 Content/Material/Volumetric/Nubis
+    - Content/EditorOnly/NubisTools (烘焙工具)
+    - Content/Maps/<level>/NubisVDBCache 与 Content/Maps/<level>/NubisQuickCloud
+    - Content/Developers/wenxiangzuo/ 下的 TestNubis* 样例
+    - 完整 GT ➜ RT ➜ RDG ➜ Shader 的同步链
+    - 完整 Houdini ➜ VDB ➜ NubisVDBDataAsset ➜ GPU 烘焙链
+  OUT of scope:
+    - Houdini DCC 工具内部的体素化 / 模拟算法 (上游黑盒)
+    - Wwise / 音频 / 物理 / DDS Actor 同步
+    - 与 NubisCloud 无关的 Sky Atmosphere / SkyAtmosphere 风暴
+    - UE 默认 VolumetricCloud (仅作对比，不深挖)
+    - HiGameServer Linux target (NubisCustom PlatformDenyList=[Linux])
+    - Niagara / GPU 粒子云 (即使共用部分 MF)
+
+existing_raw_sources: []
+# 共享 raw 池里目前没有 NubisCloud 主题笔记。本项目在 Phase 1 会从零产出
+# 6~8 篇 raw 笔记，命名规范 higame-nubis-<topic>.md，落到
+# D:\BranKM\BranKM\raw\，slug 不与 higame-ui-* / higame-mechanism-* 冲突。
+
+mode: "new"
+research_method: "local-code-archaeology"
+# 不依赖 web fetch。所有事实来自 P4 工作区:
+#   - C++ 源码 (.h / .cpp): Renderer + Plugin + Engine Public Interface
+#   - Shader (.usf / .ush): Engine/Shaders/Private/NubisVolumes
+#   - 资产 (.uasset): Content/EditorOnly/NubisTools, Content/Maps/*/NubisVDBCache
+#   - 配置: NubisCustom.uplugin, DefaultNubisCustom.ini, HIGAME_ENABLE_NUBIS
+
+planned_raw_notes:
+  # Phase 1 计划产出的 raw 笔记 (在 Phase 0 审核通过后才执行)
+  - slug: "higame-nubis-engine-arch"
+    covers_questions: [A1, A2]
+    focus: "引擎端文件清单、HIGAME_ENABLE_NUBIS 宏开关、INubisVolumeInterface 跨模块 API、GT↔RT 边界时序图"
+  - slug: "higame-nubis-clipmap-scheduling"
+    covers_questions: [A3, B3]
+    focus: "Clipmap 6 级调度、Mip Ring Crossover、Sector 滚动、FNubisClipmapLevelRenderConfig 数据流"
+  - slug: "higame-nubis-rdg-passes"
+    covers_questions: [A4, A5, A6]
+    focus: "Live Shading Pipeline 全部 RDG Pass 拆解：SparseVoxel 构建/Cull/LightingCacheReseed/NearScatter/FarDither/RayMarch/Reconstruct/BilateralUpscale/Composite"
+  - slug: "higame-nubis-shader-permutations"
+    covers_questions: [A4, A7, A8]
+    focus: "14 个 usf/ush 的入口签名、Permutation Domain、与 ush 工具库 (TracingUtils / LightingUtils / TransmittanceVolumeUtils / RayMarchingNear/Far) 的依赖图"
+  - slug: "higame-nubis-temporal-and-upscale"
+    covers_questions: [A8, E1]
+    focus: "FNubisRenderTargetViewStateData 历史纹理、Reproject、Jitter、Bilateral Upscale Near Dominance Blend 公式、Visualize 模式"
+  - slug: "higame-nubis-plugin-nubiscustom"
+    covers_questions: [B1, B2, B5]
+    focus: "NubisCustom (老路径) + NubisEditorTools + SDFCompressEditor 的模块结构、Actor/Component/Subsystem 类层次、Editor Slate 工具面板"
+  - slug: "higame-nubis-plugin-nubiscustom2"
+    covers_questions: [B3, B4]
+    focus: "NubisCustom2 (新路径) NubisClipmap*/NubisHiCloud2Actor/NubisZone2Actor/NubisVDBDataAsset 类层次与 GPU 资源生命周期"
+  - slug: "higame-nubis-bake-pipeline"
+    covers_questions: [C1, C2, C3, C4, C5]
+    focus: "Houdini ➜ OpenVDB ➜ SDFCompress ➜ NubisVDBDataAsset ➜ Quickcloud 关卡 ➜ Cook 全链；含每一步的失败诊断"
+  - slug: "higame-nubis-debug-and-platforms"
+    covers_questions: [E1, E2, E3]
+    focus: "console cvar 清单、可视化模式、Win64/PS5/Android 平台差异、降级路径"
+
+planned_wiki_pages:
+  # Phase 2 wiki (Phase 1 完成后,基于 9 篇 raw 的实际发现修正)
+  - "1. 总览 — 4 处分散位置与跨模块 API"
+  - "2. 引擎端架构 — HIGAME_ENABLE_NUBIS 与 INubisVolumeInterface"
+  - "3. GT ↔ RT 时序 — 从 ANubisHiCloud2Actor 到 RDG (Plugin 自管 GPU 资源,不触 RDG)"
+  - "4. Clipmap 6 级调度 — Mip Ring / Sector 滚动 / Two-Pass (远→近 LCache, 近→远 Scattering)"
+  - "5. RDG Pass 全图 — Live Shading Pipeline 10 Pass DAG"
+  - "6. ★MipSelector + Sector Slab-Skip 等价方案 (Sparse Voxel cvar 是空壳, 实际走 6 档 SVT + MipSelector Atlas)"
+  - "7. LightingCache 与 Transmittance Volume — EMA β=0.97 / ScrollUVOffset 三端镜像 / DirtyRegions 父级回填"
+  - "8. ★Reconstruct 5 路 + Bilateral 4 UPSCALE_MODE + Far under Near Blend (Near Dominance 是预留 cbuffer 未实装)"
+  - "9. ★NubisCustom 插件 — 新路径 NubisCustom2 是唯一生产路径; 老路径是蓝图实验遗骸 + 被复用的 SDF 烘焙工具 UNubisGenSDFComponent"
+  - "10. 烘焙流水线 — Houdini (Omniverse Python Bridge) → VDB → SDFCompress (HFW BC1) → Sector → Cook"
+  - "11. 关卡放置 Cookbook — 给新地图加云的 8 步标准流程"
+  - "12. ★调试 / 性能 / 平台 / 陷阱 (含 CL611225 回滚误导 + HiGame Begin/End 标记缺失 + Sparse Voxel 空壳 cvar 等)"
+# ★ 标记 = 基于 Phase 1 真实发现修正过的页面
+
+quality_targets:
+  pages_min: 12
+  raw_notes_min: 8
+  raw_notes_max: 10
+  cross_reference_per_page_min: 1
+  mermaid_diagrams_required_in_pages: [1, 3, 4, 5, 6, 7, 9, 10]
+  ascii_seq_diagrams_required_in_pages: [3, 4, 5]
+  source_code_excerpts_required_in_pages: [4, 5, 6, 7, 8, 9]
+  cookbook_step_by_step_required_in_pages: [10, 11]
+  pitfall_checklist_required_in_pages: [12]
+
+acceptance_criteria:
+  - "12 个 key_questions 全部被至少一篇 wiki 页覆盖 (覆盖率矩阵在 index.md 末尾给出)"
+  - "每个 RDG Pass 至少给出: Pass Name, Shader 文件, 输入 SRV, 输出 UAV, 上下游 Pass"
+  - "每段引用的 C++ 代码必须给出文件:行号锚 (相对路径，便于 P4 跳转)"
+  - "每段引用的 Shader 代码同样给出文件:行号锚"
+  - "GT↔RT 同步关系至少有一张 ASCII 时序图 + 一张 Mermaid sequenceDiagram"
+  - "烘焙流程 Cookbook 必须从 Houdini 端覆盖到打包验证"
+  - "每个 HiGame Begin/End 标记的引擎魔改点都要在某页中至少出现一次"
