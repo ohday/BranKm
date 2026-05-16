@@ -1126,3 +1126,215 @@ sources:
       - "RO 是 UObject (URO_*) 不是 AActor; 通过 MutableActorSubsystem.GetRO 注册"
       - "Multicast 重广播 + Destroy 直销毁 解决 SaveGame 反序列化不标脏"
       - "D4 fallback 含义代码未解释, 推测是该机关防御等级或 Defense #4 内部编号"
+
+  - id: 61
+    title: "Lovable / Bolt.new / v0 — 2026 Pricing, Output, and Failure Modes"
+    file: "v0-lovable-bolt-2026-comparison.md"
+    fetched: 2026-05-16
+    project: "llm-webgen-tools-2026"
+    type: synthesis
+    urls:
+      - "https://www.nxcode.io/resources/news/v0-vs-bolt-vs-lovable-ai-app-builder-comparison-2025"
+      - "https://getmocha.com/blog/best-ai-app-builder-2026/"
+      - "https://yannickdangoumba.com/lovable-vs-bolt-new-which-ai-builder-is-best/"
+      - "https://www.wbolt.com/vibe-coding-tools.html"
+      - "https://docs.lovable.dev/tips-tricks/using-images"
+      - "https://www.linkedin.com/pulse/no-code-revolution-how-platforms-like-lovable-ai-boltnew-subir-banik-ko87f"
+      - "https://mvrx.v0.build/docs/design-systems"
+    status: content-verified
+    covers_questions: [Q1, Q4, Q5, Q6, Q7]
+    key_claims:
+      - "v0: Free $5/mo credits / Premium $20/mo / Team $30/user/mo; v0-1.5-md ~$1.50 in / $7.50 out per 1M tokens"
+      - "Bolt: Free 150K/day cap 1M/mo; Starter $20 (10M tokens) / Pro $50 (26M); Claude 3.5 Sonnet powered"
+      - "Lovable: Free 5/day = 30/mo credits; Pro $25/mo (100 credits + 5/day); Build mode 0.5 credits simple, 2+ full app; Chat 1 credit/message"
+      - "v0 outputs React+Tailwind+shadcn, Vercel-only deploy, frontend only"
+      - "Lovable has Figma-like canvas + Plan Mode + Supabase/Stripe/Clerk integrations + multimodal screenshot upload"
+      - "Bolt uses StackBlitz WebContainer (Node.js in browser), no GPU hw accel, particle systems struggle"
+      - "Speed: v0 30s component / 5min landing; Bolt 2min/10min/30min; Lovable 5min/3min/15min"
+      - "G2: v0 4.7, Bolt 4.5, Lovable 4.6"
+      - "Token burn quotes: Bolt 1.3M tokens/day, $1000+ on bug fixes; Lovable 150 messages no MVP"
+      - "All three weak on complex animations: v0 CSS @keyframes drop frames, Bolt no GPU controls, Lovable templated Lottie/SVG only"
+
+  - id: 62
+    title: "Framer / Readdy / Trae SOLO / 国产 AI 网页生成工具关键事实"
+    file: "framer-readdy-trae-and-china-tools.md"
+    fetched: 2026-05-16
+    project: "llm-webgen-tools-2026"
+    type: synthesis
+    urls:
+      - "https://embark-studio.com/blog/framer-guide-master-modern-web-design-in-2026"
+      - "https://scottmax.com/?p=69913"
+      - "https://onepagelove.com/framer-pricing"
+      - "https://hamsterstack.com/pricing/framer/"
+      - "https://www.migratewebsite.ai/blog/pros-cons-framer-migrate-off-framer"
+      - "https://github.com/fav-devs/unframer"
+      - "https://kingy.ai/ai/in-depth-review-of-readdy-ai-revolutionizing-website-building-with-conversational-ai/"
+      - "https://m.163.com/news/article/K3EOHJ5R0556BKW5.html"
+      - "https://zhuanlan.zhihu.com/p/1962227437065699346"
+      - "https://findmyaitool.io/tool/readdy-ai"
+      - "https://article.juejin.cn/post/7577583653728763942"
+      - "https://news.qq.com/rain/a/20251114A03YNE00"
+      - "https://article.juejin.cn/post/7633783248478945316"
+      - "https://www.trae.com.cn/"
+      - "https://juejin.cn/post/7485669029206884367"
+      - "https://juejin.cn/post/7518298983116029967"
+      - "https://gongke.net/tools/subframe"
+      - "https://edge.modao.cc/ad/blog/8-AIGC-design-tools.html"
+      - "https://www.toutiao.com/article/7628867766266659343/"
+      - "https://findmyaitool.io/tool/magic-patterns"
+    status: content-verified
+    covers_questions: [Q1, Q2, Q3, Q4, Q6, Q7, Q8]
+    key_claims:
+      - "Framer 2026 pricing: Hobby $0 (watermark) / Mini $5 yearly (1 domain) / Basic $10 yearly (150 pages, free .com) / Pro $30 (unlimited)"
+      - "Framer cinematic features: Wireframer AI, Workshop AI, Vectors 2.0; Liquid Glass + Dithered Waves marketplace components"
+      - "Framer NO React export — outputs Div Soup with absolute positioning; locked to framer.site hosting"
+      - "Unframer 3rd-party tool exports Framer to React 19 but animation/strict-mode limited"
+      - "Readdy: 蓝湖原班人马, ARR $5M in 4 months, Product Hunt #1; pricing Free 500 credits / Starter $20-25 (5K) / Pro $40 (11K)"
+      - "Readdy point-to-point editing + version history; supports React/Vue/Figma export but multimodal style cloning works"
+      - "Trae SOLO 中国版: individual users PERMANENTLY FREE; enterprise ¥69/user/mo; international Pro $3 first month then $10"
+      - "Trae models: 豆包 1.5-pro + DeepSeek R1/V3, 中文准确率 98.7%; supports Figma/Sketch/PDF/Word import"
+      - "Trae score: simple webpages 8.5/10 in 4-10min; complex apps 6.5/10; UI 90%+ accuracy"
+      - "DeepSite V2: HuggingFace-hosted, DeepSeek R1-0528 powered, Diff Patching incremental updates ~3s, completely free"
+      - "国内 AI 设计工具 (MasterGo/摹客/即时设计/Pixso/Motiff/Ardot/稿定 AI) 偏 Figma 替代而非直接出网页"
+
+  - id: 63
+    title: "补充工具 + 动画/配色系统深度细节"
+    file: "webgen-tools-animation-color-and-china-access.md"
+    fetched: 2026-05-16
+    project: "llm-webgen-tools-2026"
+    type: synthesis
+    urls:
+      - "https://www.banani.co/blog/google-stitch-ai-review"
+      - "https://vibecoding.app/blog/google-stitch-review"
+      - "https://toolscompare.ai/tool/google-stitch"
+      - "https://www.sohu.com/a/934255967_122328931"
+      - "https://toolifyai.cn/article/483"
+      - "https://contact@manus.im/zh-cn/blog/lovable-vs-replit-vs-manus"
+      - "https://cloud.tencent.com/developer/mcp/server/10027"
+      - "https://blog.csdn.net/gitblog_00319/article/details/151291623"
+      - "https://xie.infoq.cn/article/3741c049bbbf13046f4dfe74f"
+      - "https://shipper.now/ru/same-new-alternatives/"
+      - "https://declom.com/a0.dev"
+      - "https://blog.getmocha.com/how-to-build-a-website-with-ai-for-a-business-without-coding"
+      - "https://vibe-coding.uk/tools/tempo-labs"
+      - "https://www.beautifulcode.in/blog/framer-motion-performance-issues"
+      - "https://www.linkedin.com/pulse/claude-blender-aditya-valvi"
+      - "https://qdstaff.com/the-hidden-performance-killer-in-games/"
+    status: content-verified
+    covers_questions: [Q1, Q2, Q3, Q5, Q7, Q8]
+    key_claims:
+      - "Google Stitch: Gemini 3.1 Pro/Flash; Voice Canvas mode; Vibe Design multi-variant; Free 400 credits/day (~12,450/mo); Material Design + Figma/Tailwind/JSX export"
+      - "Replit Agent 3: 200-min autonomous runs with built-in browser-based animation testing; r3f support"
+      - "TweakCN: AI-driven shadcn theme editor; natural-language theme tweaking exports CSS variables"
+      - "Same.new: URL/screenshot to React/Vue clone; pixel-perfect cloning but unstable on complex sites"
+      - "21st.dev Magic MCP: shadcn-style component generation via MCP protocol for IDEs (out of scope but ecosystem-relevant)"
+      - "动画真相: 没有工具一句话出 Three.js demo; Framer 视觉天花板; Claude Artifacts 写 GSAP/Three.js 但需多轮"
+      - "配色真相: NO tool applies color theory; v0/shadcn = 12 板选择题; Lovable 2.0 ≤3 字体启发式; Readdy 支持参考图复刻"
+      - "字体配对: 没有真自动；Lovable 2.0 有 serif headline + sans body 启发式规则"
+      - "China access: Trae 中国版 / MasterGo / 摹客 / 即时设计 / Pixso 直连; 其余基本都需代理"
+
+  - id: 61
+    title: "Lovable / Bolt.new / v0 — 2026 Pricing, Output, and Failure Modes"
+    file: "v0-lovable-bolt-2026-comparison.md"
+    fetched: 2026-05-16
+    project: "llm-webgen-tools-2026"
+    type: synthesis
+    urls:
+      - "https://www.nxcode.io/resources/news/v0-vs-bolt-vs-lovable-ai-app-builder-comparison-2025"
+      - "https://getmocha.com/blog/best-ai-app-builder-2026/"
+      - "https://yannickdangoumba.com/lovable-vs-bolt-new-which-ai-builder-is-best/"
+      - "https://www.wbolt.com/vibe-coding-tools.html"
+      - "https://docs.lovable.dev/tips-tricks/using-images"
+      - "https://www.linkedin.com/pulse/no-code-revolution-how-platforms-like-lovable-ai-boltnew-subir-banik-ko87f"
+      - "https://mvrx.v0.build/docs/design-systems"
+    status: content-verified
+    covers_questions: [Q1, Q4, Q5, Q6, Q7]
+    key_claims:
+      - "v0: Free $5/mo credits / Premium $20/mo / Team $30/user/mo; v0-1.5-md ~$1.50 in / $7.50 out per 1M tokens"
+      - "Bolt: Free 150K/day cap 1M/mo; Starter $20 (10M tokens) / Pro $50 (26M); Claude 3.5 Sonnet powered"
+      - "Lovable: Free 5/day = 30/mo credits; Pro $25/mo (100 credits + 5/day); Build mode 0.5 credits simple, 2+ full app; Chat 1 credit/message"
+      - "v0 outputs React+Tailwind+shadcn, Vercel-only deploy, frontend only"
+      - "Lovable has Figma-like canvas + Plan Mode + Supabase/Stripe/Clerk integrations + multimodal screenshot upload"
+      - "Bolt uses StackBlitz WebContainer (Node.js in browser), no GPU hw accel, particle systems struggle"
+      - "Speed: v0 30s component / 5min landing; Bolt 2min/10min/30min; Lovable 5min/3min/15min"
+      - "G2: v0 4.7, Bolt 4.5, Lovable 4.6"
+      - "Token burn quotes: Bolt 1.3M tokens/day, $1000+ on bug fixes; Lovable 150 messages no MVP"
+      - "All three weak on complex animations: v0 CSS @keyframes drop frames, Bolt no GPU controls, Lovable templated Lottie/SVG only"
+
+  - id: 62
+    title: "Framer / Readdy / Trae SOLO / 国产 AI 网页生成工具关键事实"
+    file: "framer-readdy-trae-and-china-tools.md"
+    fetched: 2026-05-16
+    project: "llm-webgen-tools-2026"
+    type: synthesis
+    urls:
+      - "https://embark-studio.com/blog/framer-guide-master-modern-web-design-in-2026"
+      - "https://scottmax.com/?p=69913"
+      - "https://onepagelove.com/framer-pricing"
+      - "https://hamsterstack.com/pricing/framer/"
+      - "https://www.migratewebsite.ai/blog/pros-cons-framer-migrate-off-framer"
+      - "https://github.com/fav-devs/unframer"
+      - "https://kingy.ai/ai/in-depth-review-of-readdy-ai-revolutionizing-website-building-with-conversational-ai/"
+      - "https://m.163.com/news/article/K3EOHJ5R0556BKW5.html"
+      - "https://zhuanlan.zhihu.com/p/1962227437065699346"
+      - "https://findmyaitool.io/tool/readdy-ai"
+      - "https://article.juejin.cn/post/7577583653728763942"
+      - "https://news.qq.com/rain/a/20251114A03YNE00"
+      - "https://article.juejin.cn/post/7633783248478945316"
+      - "https://www.trae.com.cn/"
+      - "https://juejin.cn/post/7485669029206884367"
+      - "https://juejin.cn/post/7518298983116029967"
+      - "https://gongke.net/tools/subframe"
+      - "https://edge.modao.cc/ad/blog/8-AIGC-design-tools.html"
+      - "https://www.toutiao.com/article/7628867766266659343/"
+      - "https://findmyaitool.io/tool/magic-patterns"
+    status: content-verified
+    covers_questions: [Q1, Q2, Q3, Q4, Q6, Q7, Q8]
+    key_claims:
+      - "Framer 2026 pricing: Hobby $0 (watermark) / Mini $5 yearly (1 domain) / Basic $10 yearly (150 pages, free .com) / Pro $30 (unlimited)"
+      - "Framer cinematic features: Wireframer AI, Workshop AI, Vectors 2.0; Liquid Glass + Dithered Waves marketplace components"
+      - "Framer NO React export — outputs Div Soup with absolute positioning; locked to framer.site hosting"
+      - "Unframer 3rd-party tool exports Framer to React 19 but animation/strict-mode limited"
+      - "Readdy: 蓝湖原班人马, ARR $5M in 4 months, Product Hunt #1; pricing Free 500 credits / Starter $20-25 (5K) / Pro $40 (11K)"
+      - "Readdy point-to-point editing + version history; supports React/Vue/Figma export but multimodal style cloning works"
+      - "Trae SOLO 中国版: individual users PERMANENTLY FREE; enterprise ¥69/user/mo; international Pro $3 first month then $10"
+      - "Trae models: 豆包 1.5-pro + DeepSeek R1/V3, 中文准确率 98.7%; supports Figma/Sketch/PDF/Word import"
+      - "Trae score: simple webpages 8.5/10 in 4-10min; complex apps 6.5/10; UI 90%+ accuracy"
+      - "DeepSite V2: HuggingFace-hosted, DeepSeek R1-0528 powered, Diff Patching incremental updates ~3s, completely free"
+      - "国内 AI 设计工具 (MasterGo/摹客/即时设计/Pixso/Motiff/Ardot/稿定 AI) 偏 Figma 替代而非直接出网页"
+
+  - id: 63
+    title: "补充工具 + 动画/配色系统深度细节"
+    file: "webgen-tools-animation-color-and-china-access.md"
+    fetched: 2026-05-16
+    project: "llm-webgen-tools-2026"
+    type: synthesis
+    urls:
+      - "https://www.banani.co/blog/google-stitch-ai-review"
+      - "https://vibecoding.app/blog/google-stitch-review"
+      - "https://toolscompare.ai/tool/google-stitch"
+      - "https://www.sohu.com/a/934255967_122328931"
+      - "https://toolifyai.cn/article/483"
+      - "https://contact@manus.im/zh-cn/blog/lovable-vs-replit-vs-manus"
+      - "https://cloud.tencent.com/developer/mcp/server/10027"
+      - "https://blog.csdn.net/gitblog_00319/article/details/151291623"
+      - "https://xie.infoq.cn/article/3741c049bbbf13046f4dfe74f"
+      - "https://shipper.now/ru/same-new-alternatives/"
+      - "https://declom.com/a0.dev"
+      - "https://blog.getmocha.com/how-to-build-a-website-with-ai-for-a-business-without-coding"
+      - "https://vibe-coding.uk/tools/tempo-labs"
+      - "https://www.beautifulcode.in/blog/framer-motion-performance-issues"
+      - "https://www.linkedin.com/pulse/claude-blender-aditya-valvi"
+      - "https://qdstaff.com/the-hidden-performance-killer-in-games/"
+    status: content-verified
+    covers_questions: [Q1, Q2, Q3, Q5, Q7, Q8]
+    key_claims:
+      - "Google Stitch: Gemini 3.1 Pro/Flash; Voice Canvas mode; Vibe Design multi-variant; Free 400 credits/day (~12,450/mo); Material Design + Figma/Tailwind/JSX export"
+      - "Replit Agent 3: 200-min autonomous runs with built-in browser-based animation testing; r3f support"
+      - "TweakCN: AI-driven shadcn theme editor; natural-language theme tweaking exports CSS variables"
+      - "Same.new: URL/screenshot to React/Vue clone; pixel-perfect cloning but unstable on complex sites"
+      - "21st.dev Magic MCP: shadcn-style component generation via MCP protocol for IDEs (out of scope but ecosystem-relevant)"
+      - "动画真相: 没有工具一句话出 Three.js demo; Framer 视觉天花板; Claude Artifacts 写 GSAP/Three.js 但需多轮"
+      - "配色真相: NO tool applies color theory; v0/shadcn = 12 板选择题; Lovable 2.0 ≤3 字体启发式; Readdy 支持参考图复刻"
+      - "字体配对: 没有真自动；Lovable 2.0 有 serif headline + sans body 启发式规则"
+      - "China access: Trae 中国版 / MasterGo / 摹客 / 即时设计 / Pixso 直连; 其余基本都需代理"

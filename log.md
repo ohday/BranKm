@@ -26,3 +26,9 @@
 ## [2026-05-10] websearch (local-archaeology) | higame-ui-script | Research complete — 7 raw sources (id 48-54), 12/12 questions covered
 
 ## [2026-05-10] wiki | higame-ui-script | 12 pages created
+
+## [2026-05-16] explore | llm-webgen-tools-2026 | Topic defined
+
+## [2026-05-16] websearch | llm-webgen-tools-2026 | 3 synthesis notes / 40+ URLs / 8 questions covered
+
+## [2026-05-16] wiki | llm-webgen-tools-2026 | 10 pages created

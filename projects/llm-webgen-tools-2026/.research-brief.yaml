@@ -1,0 +1,54 @@
+topic: "LLM 网页生成工具选型指南（视觉优先 · 2026.5）"
+slug: "llm-webgen-tools-2026"
+goal: >
+  在 2026 年 5 月这个时间点，调研当前主流 / 活跃的"用 LLM 生成好看网页"
+  类工具，最终输出一份能直接用于选型的指南：能挑出 1-2 个适合
+  "快速产出视觉精良（带动画、配色和谐、排版有设计感）网页"的工具，
+  并给出 quickstart 级的上手建议。研究目的是个人选型（动机 a），
+  最终目标是能直接拿来用，不涉及团队协作或工程嵌入。
+
+audience: >
+  目标读者：自己。已具备前端基础（懂 React/Tailwind/Framer Motion 概念），
+  熟悉 LLM 工具生态（用 Claude Code、知道 v0 / Cursor 的存在），
+  但没系统对比过这一批 webgen 工具的实际产出质量、动画能力和价格。
+  不需要扫盲什么是 LLM 或 React，需要的是"哪个工具实际产出最漂亮、
+  哪个最快上手、哪个国内能用、各自坑在哪"的一手对比。
+
+key_questions:
+  - "2026 年视觉质量第一梯队的 LLM 网页生成工具有哪些？各自的美学 DNA 是什么（如 Framer 的电影感、v0 的 shadcn 极简、Lovable 的全栈式、Readdy 国风营销页等）？"
+  - "动画能力对比：哪些工具原生支持 Framer Motion / GSAP / Lottie / CSS 高级动画？哪些只能出静态页？滚动驱动动画、视差、入场动画的支持情况？"
+  - "配色与字体排版自动化质量对比：谁真正应用了色彩理论 / 字体配对系统，谁只是堆 Tailwind 默认调色板？是否能从一张参考图复刻配色？"
+  - "输出形态对比：托管 URL / 可导出代码（React/Next/HTML）/ Figma 设计稿 / 纯静态 HTML？哪种形态最适合个人快速使用？"
+  - "迭代体验：多轮精修是否流畅？支持上传参考图 / 复制现有站点风格吗？局部 element 级编辑能力如何？"
+  - "价格与免费额度（2026.5 现状）：免费档够用还是必须付费？按量计费 vs 订阅制？性价比排序？"
+  - "翻车场景：每个工具最不擅长什么？（如：v0 复杂动画弱、Lovable 排版偏工程师感、Framer 不导代码、Artifacts 单文件限制等）"
+  - "国内访问性：哪些工具直连可用？哪些需代理？哪些支持国内支付？是否有国产替代品（豆包/DeepSeek/通义千问的同类产品）？"
+
+scope_boundary: >
+  范围内：
+    - 2025-2026 仍活跃迭代的视觉优先 LLM 网页生成工具
+    - 全栈生成器（v0、Lovable、Bolt、Replit Agent 等）
+    - 设计稿/营销页优先（Framer AI、Galileo、Readdy、Subframe 等）
+    - LLM 厂商内置（Claude Artifacts、ChatGPT Canvas、Gemini Canvas）
+    - 截图/参考图 → 代码类工具（Builder.io、Locofy、screenshot-to-code 等）
+    - 视觉质量、动画能力、配色排版、价格、上手成本是核心评估维度
+
+  范围外：
+    - IDE/CLI 嵌入类（Cursor、Windsurf、Cline）— 与"直接使用"目标不符
+    - prompt 工程内部机制 / 模型编排架构拆解 — 选了动机 a 不是 b
+    - 团队协作 / 企业部署 / 权限管理深度评估
+    - 已停更或边缘化的老产品（如 Galileo 若已并入 Figma 则只提一笔）
+    - 与 HiGame / UE 项目的任何关联 — 用户明确说与项目无关
+
+existing_raw_sources: []
+
+mode: "new"
+
+deliverable_shape: >
+  最终 wiki 期望的结构：
+    1. 全景地图（Mermaid：按用途/输出形态分类）
+    2. 工具能力矩阵（横向对比表：视觉/动画/配色/导出/价格/国内可达）
+    3. 决策树："我要 X → 用 Y"（按场景给推荐）
+    4. Top 2-3 工具的 quickstart（实操路径，不是营销文案）
+    5. 翻车清单（每个工具的边界 / 不擅长的场景）
+    6. 国内可访问性专题（含支付方案 + 国产替代）
