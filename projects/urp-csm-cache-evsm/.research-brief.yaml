@@ -1,0 +1,38 @@
+topic: "URP14 阴影优化：CSM 缓存 + Variance/EVSM 软阴影（PC，过肩+2.5D 双视角）"
+slug: "urp-csm-cache-evsm"
+goal: >
+  深入掌握「CSM 缓存（性能）」与「Variance/EVSM 软阴影（质量，且天生可缓存）」
+  在 Unity 2022 LTS / URP 14、PC/主机平台上的实现机理与工程取舍，使读者能够：
+  (a) 评测并选型现有开源方案；(b) 在无成品时从零实现；(c) 针对第三人称过肩
+  与 2.5D 建造两套相机行为做缓存策略调参。研究的核心难题是「缓存静态阴影 ×
+  EVSM 软滤波 × 动态投射体叠加」三者的正确管线组合——因为 EVSM 的 moment
+  不满足 min() 合并，不能像标准 depth 图那样直接把缓存静态与动态投射体相加。
+
+audience: >
+  资深 URP 工程师，已精通 URP 渲染管线、SRP 注入（ScriptableRendererFeature /
+  ScriptableRenderPass）、RTHandle、cascade 机制与方向光阴影。无需阴影科普；
+  需要机理级实现细节（能据此从零 prototype 或改造开源仓库）。
+
+key_questions:
+  - "URP14 下用 ScriptableRendererFeature + 持久化 RTHandle 实现 CSM 静/动分离缓存（静态投射体渲一次进缓存图、动态体每帧叠加）的具体做法？min(depth) 合并怎么写？持久化 RT 跨帧管理与释放的坑？"
+  - "缓存级联阴影图的卷动更新（toroidal / clipmap scroll）与光空间 texel snapping 的具体实现：相机平移旋转时如何只重渲新露出的边条、如何吸附到光空间纹理栅格以防止抖动和漏边？"
+  - "时间错峰 + 失效驱动更新策略：远级联按什么规则错帧更新（每 K 帧、按距离/移动量阈值）？2.5D 建造放置/拆除建筑时如何只重渲被改动的脏区域（局部 invalidation / dirty-region re-render）？"
+  - "Variance / EVSM（含 EVSM4 双指数翘曲）在 URP 的实现细节：moment 编码、blur/mipmap 预滤波、漏光（light bleeding）抑制、数值精度选型（R32G32F vs R16G16）、与级联接缝的处理？"
+  - "★核心★『缓存静态阴影 × EVSM 软滤波 × 动态投射体』三者组合——主攻方向：静态 EVSM 与动态 EVSM 分开存、在光照/采样阶段合并。具体怎么合并两路 moment（分别算 Chebyshev 可见性再取 min？按较近/较暗者取？可见性概率 min？），如何控制漏光与级联/两路接缝，性能与质量代价如何？以『先合并 depth 再统一转 moment+blur』作为对照基准比较优劣。"
+  - "现有开源方案盘点与评测：Unity URP 的 CSM Cache / 静动分离 / scrolling shadow / EVSM 各仓库与示例的成熟度、维护状态、性能、与 URP14 兼容性、可改造性——给出推荐与改造路线。若 EVSM+缓存的组合无成品，需给出从零实现的详尽参考（论文/GDC/引擎源码思路）。"
+  - "双视角专项：过肩第三人称（平滑平移+旋转，近景动态密集）与 2.5D 建造（近正交、相机稳定、频繁局部几何变更）两套相机行为下，缓存命中率 / 失效频率 / cascade 划分与分辨率分配应如何分别调参？视角切换时缓存如何失效与重建？"
+
+scope_boundary: >
+  纳入：方向光 CSM 缓存（静/动分离、卷动更新、时间错峰、失效/脏区、texel snap）、
+  Variance/EVSM 软阴影（moment 编码/预滤波/漏光抑制/精度）、三者组合管线、
+  开源方案评测与从零实现参考、双视角调参。
+  平台锁 PC / 主机（EVSM 高精度与每帧 blur 在此可接受；实现尽量不依赖 PC-only
+  特性以便日后向移动端降级，但不为 tile GPU 做专项妥协）。
+  接口锁 Unity 2022 LTS / URP 14：旧 ScriptableRenderPass + RTHandle，手动管理
+  持久化缓存 RT；不走 RenderGraph，但记录 URP17/Unity6 RenderGraph 迁移要点作为附注。
+  排除：Virtual Shadow Maps（UE5 稀疏虚拟纹理页式，已确认非本次目标）；屏幕空间
+  接触阴影（用户明确不纳入）；点光/聚光阴影缓存；光线追踪阴影；移动端专项优化；
+  阴影基础科普。
+
+existing_raw_sources: []
+mode: "new"

@@ -32,3 +32,9 @@
 ## [2026-05-16] websearch | llm-webgen-tools-2026 | 3 synthesis notes / 40+ URLs / 8 questions covered
 
 ## [2026-05-16] wiki | llm-webgen-tools-2026 | 10 pages created
+
+## [2026-06-28] explore | urp-csm-cache-evsm | Topic defined (VSM=Variance 非 Virtual; PC/URP14; 过肩+2.5D 双视角)
+
+## [2026-06-28] websearch | urp-csm-cache-evsm | 4 synthesis notes (id 64-67) / 24 sources / 7 questions; Q5 静动EVSM合并确认无先例=原创设计
+
+## [2026-06-28] wiki | urp-csm-cache-evsm | 9 pages created

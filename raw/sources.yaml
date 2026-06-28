@@ -1338,3 +1338,86 @@ sources:
       - "配色真相: NO tool applies color theory; v0/shadcn = 12 板选择题; Lovable 2.0 ≤3 字体启发式; Readdy 支持参考图复刻"
       - "字体配对: 没有真自动；Lovable 2.0 有 serif headline + sans body 启发式规则"
       - "China access: Trae 中国版 / MasterGo / 摹客 / 即时设计 / Pixso 直连; 其余基本都需代理"
+  - id: 64
+    title: "URP CSM 缓存机制（静动分离 / 卷动 / 错峰 / 脏区）"
+    file: "urp-csm-cache-mechanics.md"
+    fetched: 2026-06-28
+    project: "urp-csm-cache-evsm"
+    type: synthesis
+    url: "multiple"
+    status: content-verified
+    covers_questions: [1, 2, 3]
+    urls:
+      - https://advances.realtimerendering.com/s2012/insomniac/Acton-CSM_Scrolling(Siggraph2012).pdf
+      - https://learn.microsoft.com/en-us/windows/win32/dxtecharts/common-techniques-to-improve-shadow-depth-maps
+      - https://learn.microsoft.com/en-us/windows/win32/dxtecharts/cascaded-shadow-maps
+      - https://alextardif.com/shadowmapping.html
+      - https://developer.nvidia.com/gpugems/gpugems2/part-i-geometric-complexity/chapter-2-terrain-rendering-using-gpu-based-geometry
+      - https://dev.epicgames.com/documentation/en-us/unreal-engine/virtual-shadow-maps-in-unreal-engine
+      - https://discussions.unity.com/t/urp-13-1-8-proper-rthandle-usage-in-a-renderer-feature/895405
+      - https://discussions.unity.com/t/hdrp-cached-shadows-are-good/1673820
+    key_claims:
+      - "静/动合并主流走 'blit 静态深度 + LEQUAL 渲动态'，深度测试硬件天然实现 min(depth)"
+      - "URP14 持久化 RT 靠对象生命周期：RTHandle 挂 Pass 字段、Feature.Create new 一次；勿在 cleanup Release"
+      - "卷动=toroidal 环形寻址；texel snap 按 worldUnitsPerTexel floor；过肩须包围球拟合(旋转不变)"
+      - "远级联可降频(覆盖大、相机位移像素变化按比例小)；脏区=只失效包围盒光向投影相交区域"
+  - id: 65
+    title: "Variance/EVSM 机理与静动 moment 合并"
+    file: "variance-evsm-and-static-dynamic-merge.md"
+    fetched: 2026-06-28
+    project: "urp-csm-cache-evsm"
+    type: synthesis
+    url: "multiple"
+    status: content-verified
+    covers_questions: [4, 5]
+    urls:
+      - https://developer.nvidia.com/gpugems/gpugems3/part-ii-light-and-shadows/chapter-8-summed-area-variance-shadow-maps
+      - https://raw.githubusercontent.com/TheRealMJP/Shadows/master/Shadows/VSM.hlsl
+      - https://therealmjp.github.io/posts/shadow-maps/
+      - https://therealmjp.github.io/posts/shadow-sample-update/
+      - https://jankautz.com/publications/esm_gi08.pdf
+      - https://momentsingraphics.de/Media/I3D2015/MomentShadowMapping.pdf
+      - https://github.com/szaboeme/layered_variance_shadow_maps
+    key_claims:
+      - "VSM 存矩(M1,M2)→Chebyshev p_max=σ²/(σ²+(t−μ)²)；矩线性故可预滤波"
+      - "EVSM 指数翘曲减漏光，EVSM4 取 min(pos,neg)；c fp32≈42/fp16≈5.54，EVSM 须 fp32"
+      - "★核心★ EVSM moment 不能 min 合并；静/动分开存、在可见性空间 min(Vs,Vd) 合并"
+      - "2026-06-28 补搜确认静/动 EVSM 合并无文献先例 = 本项目原创设计"
+  - id: 66
+    title: "开源方案盘点：URP 阴影缓存 / VSM-EVSM"
+    file: "opensource-shadow-cache-evsm-survey.md"
+    fetched: 2026-06-28
+    project: "urp-csm-cache-evsm"
+    type: synthesis
+    url: "multiple"
+    status: content-verified
+    covers_questions: [6]
+    urls:
+      - https://catlikecoding.com/unity/tutorials/custom-srp/directional-shadows/
+      - https://github.com/TheRealMJP/Shadows
+      - https://github.com/radishface/OnDemandShadowMapUpdate
+      - https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@14.0/manual/Shadows-in-HDRP.html
+      - https://github.com/arcsearoc/VarianceShadowMaps
+      - https://discussions.unity.com/t/urp-cached-shadows/895662
+    key_claims:
+      - "URP14 无即插即用 CSM 缓存/EVSM 成品；'EVSM+缓存'组合开源界完全不存在"
+      - "URP Static Shadow Caster 勾选项 2022.2+ 实测无效"
+      - "拼装：Catlike/URP-pass 缓存底座 + radishface 错峰 + HDRP 静动 blit 范式 + TheRealMJP EVSM"
+  - id: 67
+    title: "双视角阴影调参：过肩 vs 2.5D 建造"
+    file: "dual-view-shadow-tuning.md"
+    fetched: 2026-06-28
+    project: "urp-csm-cache-evsm"
+    type: synthesis
+    url: "multiple"
+    status: content-verified
+    covers_questions: [7]
+    urls:
+      - https://learn.microsoft.com/en-us/windows/win32/dxtecharts/cascaded-shadow-maps
+      - https://developer.nvidia.com/gpugems/gpugems3/part-ii-light-and-shadows/chapter-10-parallel-split-shadow-maps-programmable-gpus
+      - https://dev.epicgames.com/documentation/en-us/unreal-engine/virtual-shadow-maps-in-unreal-engine
+      - https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@14.0/manual/Shadows-in-HDRP.html
+    key_claims:
+      - "过肩：4 级偏 log、fit-to-scene+包围球 snap、方向光缓存几乎每帧失效→静动分离+远级轮转"
+      - "2.5D：1~2 级偏 uniform、缓存命中极高、建筑增删用脏区失效(借 UE5 VSM page 范式)"
+      - "视角切换用两套独立级联+独立缓存，切换帧 OnDemand 强制重渲、勿同时改光方向"
